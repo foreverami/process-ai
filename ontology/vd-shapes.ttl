@@ -1,0 +1,260 @@
+# 레시피 검증 규칙 (SHACL)
+#
+# 작업자가 양식이나 AI 채팅으로 만든 레시피를 승인 전에, 그리고 공정 시작 직전에 한 번 더 검사한다.
+# 규칙은 코드가 아니라 데이터다. 장비 한계는 vd-equipment.ttl, 재료 한계는 vd-materials.ttl에서 읽는다.
+#
+# 심각도: sh:Violation(기본) = 실행 불가, sh:Warning = 주의, sh:Info = 참고
+# {?변수}는 SPARQL 결과값으로 채워진다.
+# 장비 파일의 101.3 같은 값은 xsd:decimal이라, 레시피 값(xsd:double)과 비교할 때 xsd:double로 맞춘다.
+
+@prefix vd:   <http://example.org/vacuum-drying#> .
+@prefix vds:  <http://example.org/vacuum-drying/shapes#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/vacuum-drying/shapes> a owl:Ontology ;
+    rdfs:label "진공 건조 레시피 검증 규칙"@ko ;
+    sh:declare [ sh:prefix "vd" ; sh:namespace "http://example.org/vacuum-drying#"^^xsd:anyURI ] ,
+               [ sh:prefix "rdfs" ; sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI ] ,
+               [ sh:prefix "skos" ; sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ] ,
+               [ sh:prefix "xsd" ; sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+vds:RecipeShape a sh:NodeShape ;
+    rdfs:label "레시피"@ko ;
+    sh:targetClass vd:Recipe ;
+    sh:property
+        vds:NameRequired ,
+        vds:PressureRequired , vds:PressureBelowPump , vds:PressureNotVacuum , vds:PumpTimeoutPositive ,
+        vds:TemperatureRequired , vds:TemperatureOverComponent , vds:TemperatureOverSubstrate ,
+        vds:TemperatureNearAmbient , vds:SolventFlashPoint ,
+        vds:RampPositive , vds:RampOverHeater ,
+        vds:MinHoldNonNegative , vds:HoldOrder , vds:TotalDuration ,
+        vds:WindowPositive , vds:WindowShort , vds:WindowLongerThanHold , vds:BandPositive ,
+        vds:CoolOverSafeOpen , vds:CoolBelowTarget ,
+        vds:UnknownSolvent , vds:UnknownSubstrate .
+
+# ---------------------------------------------------------------- 기본 정보
+
+vds:NameRequired a sh:PropertyShape ;
+    sh:path vd:recipeName ;
+    sh:minCount 1 ;
+    sh:pattern "\\S" ;
+    sh:message "실험 이름이 비어 있습니다."@ko .
+
+# ---------------------------------------------------------------- 진공
+
+vds:PressureRequired a sh:PropertyShape ;
+    sh:path vd:targetPressure ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "목표 압력이 하나 있어야 합니다."@ko .
+
+vds:PressureBelowPump a sh:PropertyShape ;
+    sh:path vd:targetPressure ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "목표 압력 {?value} kPa는 {?part}의 최저 도달 압력 {?limit} kPa보다 낮습니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit ?part WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq .
+                ?eq vd:hasComponent ?c .
+                ?c vd:ultimatePressure ?limit ; rdfs:label ?part .
+                FILTER (langMatches(lang(?part), "ko"))
+                FILTER (?value < xsd:double(?limit))
+            }""" ] .
+
+vds:PressureNotVacuum a sh:PropertyShape ;
+    sh:path vd:targetPressure ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "목표 압력 {?value} kPa는 대기압({?limit} kPa) 이상이라 진공이 아닙니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq .
+                ?eq vd:ventedPressure ?limit .
+                FILTER (?value >= xsd:double(?limit))
+            }""" ] .
+
+vds:PumpTimeoutPositive a sh:PropertyShape ;
+    sh:path vd:pumpTimeout ;
+    sh:minExclusive 0 ;
+    sh:message "배기 제한 시간은 0보다 커야 합니다."@ko .
+
+# ---------------------------------------------------------------- 가열
+
+vds:TemperatureRequired a sh:PropertyShape ;
+    sh:path vd:targetTemperature ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "목표 온도가 하나 있어야 합니다."@ko .
+
+vds:TemperatureOverComponent a sh:PropertyShape ;
+    sh:path vd:targetTemperature ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "목표 온도 {?value}°C가 {?part}의 최대 사용 온도 {?limit}°C를 넘습니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit ?part WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq .
+                ?eq vd:hasComponent ?c .
+                ?c vd:maxOperatingTemperature ?limit ; rdfs:label ?part .
+                FILTER (langMatches(lang(?part), "ko"))
+                FILTER (?value > xsd:double(?limit))
+            }""" ] .
+
+vds:TemperatureOverSubstrate a sh:PropertyShape ;
+    sh:path vd:targetTemperature ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "목표 온도 {?value}°C가 {?name}의 최대 사용 온도 {?limit}°C를 넘습니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit ?name WHERE {
+                $this $PATH ?value ; vd:usesSubstrate ?s .
+                ?s vd:maxOperatingTemperature ?limit ; skos:prefLabel ?name .
+                FILTER (langMatches(lang(?name), "ko"))
+                FILTER (?value > xsd:double(?limit))
+            }""" ] .
+
+vds:TemperatureNearAmbient a sh:PropertyShape ;
+    sh:path vd:targetTemperature ;
+    sh:minExclusive 30 ;
+    sh:severity sh:Warning ;
+    sh:message "목표 온도가 실온과 거의 같습니다."@ko .
+
+vds:SolventFlashPoint a sh:PropertyShape ;
+    sh:path vd:targetTemperature ;
+    sh:severity sh:Info ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "{?name}의 인화점은 {?flash}°C입니다. 용매 증기가 진공 펌프로 배출되므로 배기가 환기 설비에 연결됐는지 확인하세요."@ko ;
+        sh:select """
+            SELECT $this ?value ?flash ?name WHERE {
+                $this $PATH ?value ; vd:usesSolvent ?s .
+                ?s vd:flashPoint ?flash ; skos:prefLabel ?name .
+                FILTER (langMatches(lang(?name), "ko"))
+                FILTER (?value >= xsd:double(?flash))
+            }""" ] .
+
+vds:RampPositive a sh:PropertyShape ;
+    sh:path vd:rampRate ;
+    sh:minExclusive 0 ;
+    sh:message "승온 속도는 0보다 커야 합니다."@ko .
+
+vds:RampOverHeater a sh:PropertyShape ;
+    sh:path vd:rampRate ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "승온 속도 {?value}°C/분이 {?part}의 최대 승온 속도 {?limit}°C/분을 넘습니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit ?part WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq .
+                ?eq vd:hasComponent ?c .
+                ?c vd:maxRampRate ?limit ; rdfs:label ?part .
+                FILTER (langMatches(lang(?part), "ko"))
+                FILTER (?value > xsd:double(?limit))
+            }""" ] .
+
+# ---------------------------------------------------------------- 건조 종료 조건
+
+vds:MinHoldNonNegative a sh:PropertyShape ;
+    sh:path vd:minHoldDuration ;
+    sh:minInclusive 0 ;
+    sh:message "최소 유지 시간은 0 이상이어야 합니다."@ko .
+
+vds:HoldOrder a sh:PropertyShape ;
+    sh:path vd:minHoldDuration ;
+    sh:lessThan vd:maxHoldDuration ;
+    sh:message "최대 유지 시간은 최소 유지 시간보다 커야 합니다."@ko .
+
+vds:TotalDuration a sh:PropertyShape ;
+    sh:path vd:maxHoldDuration ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "배기·승온·유지 시간 합계가 최대 {?total}분으로 장비 허용 시간 {?limit}분을 넘습니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?total ?limit WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq ;
+                      vd:pumpTimeout ?pump ; vd:targetTemperature ?t ; vd:rampRate ?ramp .
+                ?eq vd:maxProcessDuration ?limit .
+                FILTER (?ramp > 0)
+                BIND (?pump + ?value + IF(?t > 25, (?t - 25) / ?ramp, 0) AS ?raw)
+                BIND (ROUND(?raw) AS ?total)
+                FILTER (?raw > xsd:double(?limit))
+            }""" ] .
+
+vds:WindowPositive a sh:PropertyShape ;
+    sh:path vd:stableWindow ;
+    sh:minExclusive 0 ;
+    sh:message "안정 판정 구간은 0보다 커야 합니다."@ko .
+
+vds:WindowShort a sh:PropertyShape ;
+    sh:path vd:stableWindow ;
+    sh:minInclusive 10 ;
+    sh:severity sh:Warning ;
+    sh:message "판정 구간이 10초보다 짧으면 잡음 때문에 일찍 종료될 수 있습니다."@ko .
+
+vds:WindowLongerThanHold a sh:PropertyShape ;
+    sh:path vd:stableWindow ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "안정 판정 구간 {?value}초가 최대 유지 시간 {?hold}분보다 깁니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?hold WHERE {
+                $this $PATH ?value ; vd:maxHoldDuration ?hold .
+                FILTER (?value / 60 > xsd:double(?hold))
+            }""" ] .
+
+vds:BandPositive a sh:PropertyShape ;
+    sh:path vd:stableBand ;
+    sh:minExclusive 0 ;
+    sh:message "신호 변동 허용폭은 0보다 커야 합니다."@ko .
+
+# ---------------------------------------------------------------- 마무리
+
+vds:CoolOverSafeOpen a sh:PropertyShape ;
+    sh:path vd:coolToTemperature ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "냉각 목표 온도 {?value}°C는 {?part}의 개방 허용 온도 {?limit}°C 이하여야 합니다."@ko ;
+        sh:select """
+            SELECT $this ?value ?limit ?part WHERE {
+                $this $PATH ?value ; vd:forEquipment ?eq .
+                ?eq vd:hasComponent ?c .
+                ?c vd:safeOpenTemperature ?limit ; rdfs:label ?part .
+                FILTER (langMatches(lang(?part), "ko"))
+                FILTER (?value > xsd:double(?limit))
+            }""" ] .
+
+vds:CoolBelowTarget a sh:PropertyShape ;
+    sh:path vd:coolToTemperature ;
+    sh:lessThan vd:targetTemperature ;
+    sh:severity sh:Warning ;
+    sh:message "냉각 목표 온도가 가열 목표 온도보다 높거나 같습니다."@ko .
+
+# ---------------------------------------------------------------- 지식 범위 밖
+
+vds:UnknownSolvent a sh:PropertyShape ;
+    sh:path vd:solventName ;
+    sh:severity sh:Warning ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "'{?value}'은(는) 온톨로지에 없는 용매라 물성 기반 검사를 하지 못했습니다. vd-materials.ttl에 추가하세요."@ko ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this $PATH ?value .
+                FILTER NOT EXISTS { $this vd:usesSolvent ?s }
+            }""" ] .
+
+vds:UnknownSubstrate a sh:PropertyShape ;
+    sh:path vd:substrateName ;
+    sh:severity sh:Warning ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/shapes> ;
+        sh:message "'{?value}'은(는) 온톨로지에 없는 기판이라 기판 허용 온도를 검사하지 못했습니다. vd-materials.ttl에 추가하세요."@ko ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this $PATH ?value .
+                FILTER NOT EXISTS { $this vd:usesSubstrate ?s }
+            }""" ] .

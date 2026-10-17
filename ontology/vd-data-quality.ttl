@@ -1,0 +1,151 @@
+# 지식 기반 무결성 규칙 (SHACL)
+#
+# 온톨로지를 고친 뒤 빠진 값이나 잘못된 값이 없는지 검사한다.
+#   python3 -m process_ai.knowledge check
+# 서버도 시작할 때 이 검사를 통과해야 뜬다. 장비 한계값이 빠진 채로 공정이 돌지 않게 하려는 것이다.
+
+@prefix vd:   <http://example.org/vacuum-drying#> .
+@prefix vds:  <http://example.org/vacuum-drying/shapes#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+
+<http://example.org/vacuum-drying/data-quality> a owl:Ontology ;
+    rdfs:label "지식 기반 무결성 규칙"@ko ;
+    sh:declare [ sh:prefix "vd" ; sh:namespace "http://example.org/vacuum-drying#"^^xsd:anyURI ] ,
+               [ sh:prefix "rdfs" ; sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI ] ,
+               [ sh:prefix "xsd" ; sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] ,
+               [ sh:prefix "qudt" ; sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ] .
+
+vds:Number a sh:NodeShape ;
+    sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:double ] [ sh:datatype xsd:integer ] ) .
+
+vds:KoreanLabel a sh:NodeShape ;
+    sh:languageIn ( "ko" ) .
+
+# ---------------------------------------------------------------- 장비
+
+vds:ChamberData a sh:NodeShape ;
+    sh:targetClass vd:VacuumDryingChamber ;
+    sh:property
+        [ sh:path rdfs:label ; sh:qualifiedValueShape vds:KoreanLabel ; sh:qualifiedMinCount 1 ;
+          sh:message "챔버에 한국어 이름(rdfs:label @ko)이 있어야 합니다."@ko ] ,
+        [ sh:path vd:ventedPressure ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 대기 개방 압력(vd:ventedPressure) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:overshootMargin ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 과열 허용 폭(vd:overshootMargin) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:maxProcessDuration ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 최대 공정 시간(vd:maxProcessDuration) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:heatTimeoutExtra ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 승온 여유 시간(vd:heatTimeoutExtra) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:ventTimeout ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 벤트 제한 시간(vd:ventTimeout) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:coolTimeout ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "챔버에 냉각 제한 시간(vd:coolTimeout) 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:hasComponent ; sh:qualifiedValueShape [ sh:class vd:Heater ] ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "챔버에 히터가 정확히 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:hasComponent ; sh:qualifiedValueShape [ sh:class vd:VacuumPump ] ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "챔버에 진공 펌프가 정확히 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:hasComponent ; sh:qualifiedValueShape [ sh:class vd:AutomaticDoor ] ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "챔버에 자동 개폐문이 정확히 하나 있어야 합니다."@ko ] .
+
+vds:ComponentData a sh:NodeShape ;
+    sh:targetObjectsOf vd:hasComponent ;
+    sh:property [ sh:path rdfs:label ; sh:qualifiedValueShape vds:KoreanLabel ; sh:qualifiedMinCount 1 ;
+                  sh:message "구성품에 한국어 이름(rdfs:label @ko)이 있어야 검증 메시지에 쓸 수 있습니다."@ko ] ,
+                [ sh:path vd:maxOperatingTemperature ; sh:maxCount 1 ; sh:node vds:Number ;
+                  sh:message "최대 사용 온도는 숫자 하나여야 합니다."@ko ] .
+
+vds:HeaterData a sh:NodeShape ;
+    sh:targetClass vd:Heater ;
+    sh:property [ sh:path vd:maxOperatingTemperature ; sh:minCount 1 ;
+                  sh:message "히터에 최대 사용 온도(vd:maxOperatingTemperature)가 있어야 합니다."@ko ] ,
+                [ sh:path vd:maxRampRate ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+                  sh:message "히터에 최대 승온 속도(vd:maxRampRate) 숫자가 하나 있어야 합니다."@ko ] .
+
+vds:PumpData a sh:NodeShape ;
+    sh:targetClass vd:VacuumPump ;
+    sh:property [ sh:path vd:ultimatePressure ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+                  sh:message "진공 펌프에 최저 도달 압력(vd:ultimatePressure) 숫자가 하나 있어야 합니다."@ko ] .
+
+vds:DoorData a sh:NodeShape ;
+    sh:targetClass vd:AutomaticDoor ;
+    sh:property [ sh:path vd:safeOpenTemperature ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+                  sh:message "개폐문에 개방 허용 온도(vd:safeOpenTemperature) 숫자가 하나 있어야 합니다."@ko ] ,
+                [ sh:path vd:travelTimeout ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+                  sh:message "개폐문에 이동 제한 시간(vd:travelTimeout) 숫자가 하나 있어야 합니다."@ko ] .
+
+# ---------------------------------------------------------------- 재료
+
+vds:SolventData a sh:NodeShape ;
+    sh:targetClass vd:Solvent ;
+    sh:property
+        [ sh:path skos:prefLabel ; sh:qualifiedValueShape vds:KoreanLabel ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "용매에 한국어 대표 이름(skos:prefLabel @ko)이 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:casNumber ; sh:minCount 1 ; sh:maxCount 1 ;
+          sh:pattern "^[0-9]{2,7}-[0-9]{2}-[0-9]$" ;
+          sh:message "용매에 올바른 형식의 CAS 번호가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:boilingPoint ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "용매에 끓는점 숫자가 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:flashPoint ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "인화점은 숫자 하나여야 합니다."@ko ] ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/data-quality> ;
+        sh:message "Antoine 계수는 A, B, C를 모두 적거나 모두 비워야 합니다."@ko ;
+        sh:select """
+            SELECT $this WHERE {
+                $this vd:antoineA|vd:antoineB|vd:antoineC ?any .
+                FILTER NOT EXISTS { $this vd:antoineA ?a ; vd:antoineB ?b ; vd:antoineC ?c }
+            }""" ] .
+
+vds:SubstrateData a sh:NodeShape ;
+    sh:targetClass vd:Substrate ;
+    sh:property
+        [ sh:path skos:prefLabel ; sh:qualifiedValueShape vds:KoreanLabel ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "기판에 한국어 대표 이름(skos:prefLabel @ko)이 하나 있어야 합니다."@ko ] ,
+        [ sh:path vd:maxOperatingTemperature ; sh:minCount 1 ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "기판에 최대 사용 온도 숫자가 하나 있어야 합니다."@ko ] .
+
+vds:CoatingData a sh:NodeShape ;
+    sh:targetClass vd:Coating ;
+    sh:property
+        [ sh:path skos:prefLabel ; sh:qualifiedValueShape vds:KoreanLabel ;
+          sh:qualifiedMinCount 1 ; sh:qualifiedMaxCount 1 ;
+          sh:message "코팅 재료에 한국어 대표 이름(skos:prefLabel @ko)이 하나 있어야 합니다."@ko ] .
+
+# ---------------------------------------------------------------- 레시피 파라미터 정의
+
+vds:RecipeParameterData a sh:NodeShape ;
+    sh:targetSubjectsOf vd:jsonField ;
+    sh:property
+        [ sh:path vd:jsonField ; sh:maxCount 1 ; sh:message "JSON 필드는 하나여야 합니다."@ko ] ,
+        [ sh:path rdfs:label ; sh:qualifiedValueShape vds:KoreanLabel ; sh:qualifiedMinCount 1 ;
+          sh:message "레시피 파라미터에 한국어 이름이 있어야 AI 프롬프트와 안내 문구에 쓸 수 있습니다."@ko ] ,
+        [ sh:path rdfs:range ; sh:minCount 1 ; sh:maxCount 1 ;
+          sh:message "레시피 파라미터에 값의 형식(rdfs:range)이 하나 있어야 합니다."@ko ] ;
+    sh:sparql [
+        sh:prefixes <http://example.org/vacuum-drying/data-quality> ;
+        sh:message "숫자 파라미터에는 단위(qudt:hasUnit)와 물리량 종류(qudt:hasQuantityKind)가 있어야 합니다."@ko ;
+        sh:select """
+            SELECT $this WHERE {
+                $this rdfs:range xsd:double .
+                FILTER NOT EXISTS { $this qudt:hasUnit ?u ; qudt:hasQuantityKind ?k }
+            }""" ] .
+
+vds:UnitData a sh:NodeShape ;
+    sh:targetSubjectsOf qudt:conversionMultiplier ;
+    sh:property
+        [ sh:path qudt:symbol ; sh:minCount 1 ; sh:maxCount 1 ;
+          sh:message "단위에 기호(qudt:symbol)가 하나 있어야 합니다."@ko ] ,
+        [ sh:path qudt:hasQuantityKind ; sh:minCount 1 ; sh:maxCount 1 ;
+          sh:message "단위에 물리량 종류가 하나 있어야 합니다."@ko ] ,
+        [ sh:path qudt:conversionMultiplier ; sh:maxCount 1 ; sh:node vds:Number ;
+          sh:message "변환 배수는 숫자 하나여야 합니다."@ko ] .

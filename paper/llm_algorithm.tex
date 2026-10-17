@@ -1,0 +1,69 @@
+% !TEX program = xelatex
+% Overleaf: Menu → Compiler를 XeLaTeX로 설정하세요.
+% 논문에 넣을 때는 [프리앰블] 부분을 논문 프리앰블에, [본문] 부분을 원하는 위치에 붙여 넣으면 됩니다.
+\documentclass[11pt]{article}
+
+% ---------------------------------------------------------------- [프리앰블]
+\usepackage{kotex}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{알고리즘}
+\renewcommand{\algorithmicrequire}{\textbf{입력:}}
+\renewcommand{\algorithmicensure}{\textbf{출력:}}
+\newcommand{\Fn}[1]{\textsc{#1}}
+% ----------------------------------------------------------------
+
+\begin{document}
+
+% ---------------------------------------------------------------- [본문]
+\begin{algorithm}[t]
+\caption{온톨로지 기반 로컬 LLM 공정 레시피 생성}
+\label{alg:recipe-generation}
+\begin{algorithmic}[1]
+\Require 작업자 발화 $u$, 대화 상태 $D=(V, A)$, 온톨로지 $\mathcal{O}$, SHACL 규칙 $\mathcal{S}$, 로컬 LLM $\mathcal{M}$
+\Ensure 레시피 초안 $R$, 검증 결과 $\mathcal{I}$, 응답 $y$, 갱신된 대화 상태 $D'$
+\State $P \gets \{\, p \mid (p,\ \texttt{vd:jsonField},\ \cdot) \in \mathcal{O} \,\}$ \Comment{레시피 파라미터 정의 조회}
+\State $\Sigma \gets \Fn{Schema}(P)$;\ \ $\pi \gets \Fn{Prompt}(P, \mathcal{O}, A)$ \Comment{온톨로지로 스키마·프롬프트 생성}
+\For{$k = 1$ \textbf{to} $2$}
+    \State $x \gets \mathcal{M}(\pi, u;\ \Sigma,\ \tau = 0)$ \Comment{JSON 스키마 강제 디코딩}
+    \State \textbf{if} $x \models \Sigma$ \textbf{then break}
+    \State $\pi \gets \pi \,\Vert\, \Fn{Feedback}(x)$ \Comment{형식 오류를 알려 재요청}
+\EndFor
+\State \textbf{if} $x \not\models \Sigma$ \textbf{then raise} 추출 실패
+\State $V_{\mathrm{new}} \gets \varnothing$
+\ForAll{$p \in P$ \textbf{such that} $x_p \neq \texttt{null}$}
+    \State \textbf{if} $p$ is numeric \textbf{then} $V_{\mathrm{new}}[p] \gets \Fn{Normalize}(x_p, p, \mathcal{O})$ \Comment{알고리즘~\ref{alg:unit-normalization}, 단위 오류 시 제외}
+    \State \textbf{else if} $p \in \{\mathrm{solvent}, \mathrm{substrate}\}$ \textbf{then} $V_{\mathrm{new}}[p] \gets \Fn{Link}(x_p, \mathcal{O})$ \Comment{SKOS 동의어로 개체 연결}
+    \State \textbf{else} $V_{\mathrm{new}}[p] \gets x_p$
+\EndFor
+\State $E \gets \Fn{LinkEntities}(u, \mathcal{O})$ \Comment{최장 일치, 조사 경계 인식}
+\State $V_{\mathrm{new}} \gets \Fn{Complete}(V_{\mathrm{new}}, E, \mathcal{O})$ \Comment{LLM이 놓친 항목 보완}
+\State $V \gets V \oplus V_{\mathrm{new}}$ \Comment{새 값이 이전 값을 덮어씀}
+\State $M \gets \{\, p \in P \mid \mathrm{required}(p) \wedge p \notin V \,\}$
+\If{$M \neq \varnothing$}
+    \State \Return $(\varnothing,\ \varnothing,\ \Fn{Ask}(V, M),\ (V, M))$ \Comment{필수값은 추측하지 않고 되물음}
+\EndIf
+\State $R \gets \Fn{Instantiate}(V)$ \Comment{선택 항목은 기본값으로 채움}
+\State $G_R \gets \Fn{ToRDF}(R, \mathcal{O})$ \Comment{장비·용매·기판 개체와 연결}
+\State $\mathcal{I} \gets \Fn{SHACL}(\mathcal{O} \cup G_R,\ \mathcal{S})$ \Comment{위반·경고·정보로 분류}
+\State \Return $(R,\ \mathcal{I},\ \Fn{Draft}(R, \mathcal{I}),\ (V, \varnothing))$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{온톨로지 기반 단위 정규화 \Fn{Normalize}}
+\label{alg:unit-normalization}
+\begin{algorithmic}[1]
+\Require 추출값 $x_p = (v, s)$ (값 $v$, 단위 표기 $s$), 파라미터 $p$, 온톨로지 $\mathcal{O}$
+\Ensure 기준 단위로 바꾼 값 $v_c$
+\State $c \gets \mathrm{unit}(p)$ \Comment{\texttt{qudt:hasUnit}}
+\State \textbf{if} $s = \varepsilon$ \textbf{then return} $v$ \Comment{단위 생략 시 기준 단위로 해석}
+\State $w \gets \Fn{Lookup}(s, \mathcal{O})$ \Comment{\texttt{qudt:symbol}, \texttt{skos:altLabel} 비교}
+\State \textbf{if} $w = \bot \,\vee\, \mathrm{kind}(w) \neq \mathrm{kind}(c)$ \textbf{then raise} 단위 오류 \Comment{물리량 종류 불일치}
+\State \Return $(v + o_w)\, m_w / m_c - o_c$ \Comment{$m$: 변환 배수, $o$: 오프셋}
+\end{algorithmic}
+\end{algorithm}
+% ----------------------------------------------------------------
+
+\end{document}

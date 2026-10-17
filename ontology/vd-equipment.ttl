@@ -1,0 +1,57 @@
+# 우리 장비 (ABox) — 실제 부품 사양으로 값을 바꿔야 한다.
+#
+# 공정 제어기의 안전 한계(최대 온도, 최저 압력, 문 개방 온도, 제한 시간)와
+# 레시피 검증 규칙이 모두 여기 값을 읽는다. 코드에는 숫자가 없다.
+#
+# 장비 최대 온도 = 구성품들의 vd:maxOperatingTemperature 중 가장 낮은 값
+
+@prefix vd:   <http://example.org/vacuum-drying#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+vd:Chamber01 a vd:VacuumDryingChamber ;
+    rdfs:label "진공 건조 챔버 1호기"@ko ;
+    vd:hasComponent vd:StageHeater01 , vd:ChamberSeal01 , vd:VacuumPump01 , vd:VentValve01 ,
+                    vd:Door01 , vd:Thermocouple01 , vd:PressureGauge01 , vd:Photodiode01 ;
+    vd:ventedPressure 101.3 ;
+    vd:overshootMargin 15.0 ;
+    vd:maxProcessDuration 240.0 ;
+    vd:heatTimeoutExtra 10.0 ;
+    vd:ventTimeout 120.0 ;
+    vd:coolTimeout 60.0 ;
+    dcterms:source "예시값 — 팀 장비 사양으로 교체 필요" .
+
+vd:StageHeater01 a vd:Heater ;
+    rdfs:label "가열 스테이지 히터"@ko ;
+    vd:maxOperatingTemperature 200.0 ;
+    vd:maxRampRate 20.0 .
+
+vd:ChamberSeal01 a vd:ChamberSeal ;
+    rdfs:label "챔버 O-링 (FKM)"@ko ;
+    vd:maxOperatingTemperature 230.0 ;
+    rdfs:comment "FKM O-링의 연속 사용 온도 예시. 부품 데이터시트로 확인할 것."@ko .
+
+vd:VacuumPump01 a vd:VacuumPump ;
+    rdfs:label "진공 펌프"@ko ;
+    vd:ultimatePressure 1.0 .
+
+vd:VentValve01 a vd:VentValve ;
+    rdfs:label "벤트 솔레노이드 밸브"@ko .
+
+vd:Door01 a vd:AutomaticDoor ;
+    rdfs:label "자동 개폐문"@ko ;
+    vd:safeOpenTemperature 60.0 ;
+    vd:travelTimeout 20.0 .
+
+vd:Thermocouple01 a vd:TemperatureSensor ;
+    rdfs:label "K형 열전대 (MAX6675)"@ko ;
+    sosa:observes vd:StageTemperature .
+
+vd:PressureGauge01 a vd:PressureSensor ;
+    rdfs:label "진공 게이지"@ko ;
+    sosa:observes vd:ChamberPressure .
+
+vd:Photodiode01 a vd:Photodiode ;
+    rdfs:label "포토다이오드"@ko ;
+    sosa:observes vd:FilmOpticalSignal .

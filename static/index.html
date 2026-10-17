@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>진공 건조 공정 콘솔</title>
+<style>
+:root {
+  --bg: #0d0f12; --panel: #13161c; --panel-2: #181c24; --line: #242a36;
+  --text: #d5dae3; --muted: #7b8494; --faint: #4a5260;
+  --accent: #60a5fa; --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444;
+  --temp: #fb923c; --sp: #fdba74; --press: #38bdf8; --pd: #a78bfa;
+  --sans: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--sans); }
+button, input, select, textarea { font: inherit; color: inherit; }
+header {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 14px 20px; border-bottom: 1px solid var(--line);
+}
+header h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: .02em; }
+.badge { font: 12px var(--mono); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.badge.ok { color: var(--ok); border-color: #22c55e55; }
+.badge.bad { color: var(--bad); border-color: #ef444455; }
+.badge.warn { color: var(--warn); border-color: #f59e0b55; }
+.spacer { flex: 1; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.35fr); gap: 16px; padding: 16px 20px 32px; }
+@media (max-width: 1200px) { main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } #monitor { grid-column: 1 / -1; } }
+@media (max-width: 760px) { main { grid-template-columns: minmax(0, 1fr); padding: 12px 16px 24px; } }
+section.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
+.panel > h2 { margin: 0; padding: 12px 16px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
+.panel > h2 .step { font: 11px var(--mono); color: var(--faint); }
+.body { padding: 14px 16px; }
+.tabs { display: flex; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; background: none; border: 0; padding: 10px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+.tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
+fieldset { border: 0; margin: 0 0 14px; padding: 0; }
+legend { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+label { display: block; font-size: 12px; color: var(--muted); }
+label.full { grid-column: 1 / -1; }
+input, select, textarea {
+  width: 100%; margin-top: 3px; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 4px; padding: 7px 9px; color: var(--text);
+}
+input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+textarea { resize: vertical; }
+.req::after { content: " *"; color: var(--warn); }
+.btn { border: 1px solid var(--line); background: var(--panel-2); border-radius: 4px; padding: 8px 14px; cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+.btn.danger { background: #b91c1c; border-color: #b91c1c; color: #fff; font-weight: 600; }
+.btn.block { width: 100%; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.mono { font-family: var(--mono); }
+.msg-error { color: var(--bad); font-size: 13px; margin-top: 8px; }
+
+/* chat */
+#chatLog { height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
+.bubble { max-width: 88%; padding: 8px 11px; border-radius: 8px; white-space: pre-wrap; word-break: break-word; }
+.bubble.user { align-self: flex-end; background: #1e3a8a; }
+.bubble.ai { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--line); }
+.bubble.err { align-self: flex-start; color: var(--bad); background: #2a1215; }
+.chat-input { display: flex; gap: 8px; margin-top: 8px; }
+.chat-input textarea { margin: 0; min-height: 60px; }
+.hint { font-size: 12px; color: var(--faint); margin: 0 0 10px; }
+
+/* review */
+.steps { list-style: none; margin: 0 0 12px; padding: 0; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(s); font: 11px var(--mono); color: var(--faint); padding-top: 2px; }
+.steps b { font-weight: 600; }
+.kv { color: var(--muted); font-size: 12px; }
+.box { border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; font-size: 13px; }
+.box.warn { border-color: #f59e0b55; background: #f59e0b0d; }
+.box.bad { border-color: #ef444455; background: #ef44440d; }
+.box.ok { border-color: #22c55e55; background: #22c55e0d; }
+.box.info { border-color: #60a5fa55; background: #60a5fa0d; }
+.box.plain { background: var(--panel-2); }
+.bubble-notes { align-self: flex-start; max-width: 88%; margin: -4px 0 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
+header a { color: var(--muted); font-size: 12px; }
+.box ul { margin: 4px 0 0; padding-left: 18px; }
+.box h4 { margin: 0; font-size: 12px; font-weight: 600; }
+.check { display: flex; gap: 8px; align-items: flex-start; color: var(--text); font-size: 13px; margin: 10px 0; }
+.check input { width: auto; margin-top: 3px; }
+.empty { color: var(--faint); text-align: center; padding: 40px 10px; }
+
+/* monitor */
+.stepper { display: flex; gap: 4px; margin-bottom: 14px; }
+.stepper div { flex: 1; min-width: 0; text-align: center; font-size: 11px; color: var(--faint); }
+.stepper div::before { content: ""; display: block; height: 4px; border-radius: 2px; background: var(--line); margin-bottom: 5px; }
+.stepper .done { color: var(--muted); } .stepper .done::before { background: var(--ok); }
+.stepper .cur { color: var(--text); font-weight: 600; } .stepper .cur::before { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.stepper .fail { color: var(--bad); font-weight: 600; } .stepper .fail::before { background: var(--bad); }
+@keyframes pulse { 50% { opacity: .35; } }
+.phase-line { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.phase-line .name { font-size: 20px; font-weight: 600; }
+.readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+@media (max-width: 520px) { .readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.readout { background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; min-width: 0; }
+.readout .label { font-size: 11px; color: var(--muted); }
+.readout .value { font: 600 20px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.readout .sub { font: 11px var(--mono); color: var(--faint); }
+.flags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.flag { font: 11px var(--mono); padding: 2px 8px; border-radius: 3px; border: 1px solid var(--line); color: var(--faint); }
+.flag.on { color: var(--ok); border-color: #22c55e66; }
+.meter { margin-bottom: 12px; }
+.meter .track { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.meter .fill { height: 100%; background: var(--warn); transition: width .3s; }
+.meter .fill.stable { background: var(--ok); }
+.chart { margin-bottom: 8px; }
+.chart .title { font-size: 11px; color: var(--muted); display: flex; gap: 12px; }
+.chart .title i { display: inline-block; width: 10px; height: 2px; vertical-align: middle; margin-right: 4px; }
+canvas { width: 100%; height: 110px; display: block; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; }
+.actions { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+.actions .btn { flex: 1; min-width: 140px; }
+#events { list-style: none; padding: 0; margin: 0; max-height: 220px; overflow-y: auto; font-size: 12px; }
+#events li { padding: 4px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 64px 1fr; gap: 8px; }
+#events .time { font-family: var(--mono); color: var(--faint); }
+#events .error { color: var(--bad); } #events .warning { color: var(--warn); } #events .success { color: var(--ok); }
+h3 { font-size: 12px; font-weight: 600; color: var(--muted); margin: 14px 0 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>진공 건조 공정 콘솔</h1>
+  <span id="driverBadge" class="badge">연결 중</span>
+  <span id="connBadge" class="badge">—</span>
+  <span id="llmBadge" class="badge" title="">로컬 LLM 확인 중</span>
+  <a href="/api/knowledge/export" title="온톨로지와 실행 이력을 합친 지식그래프 (Protégé로 열 수 있음)">지식그래프 내보내기 (.ttl)</a>
+  <span class="spacer"></span>
+  <span class="small muted" id="clock"></span>
+</header>
+
+<main>
+  <!-- ① 입력 -->
+  <section class="panel" id="input">
+    <h2><span class="step">01</span>실험 계획 입력</h2>
+    <div class="tabs">
+      <button data-tab="form" class="active">양식</button>
+      <button data-tab="chat">AI 채팅 (로컬 LLM)</button>
+    </div>
+
+    <div class="body" id="tab-form">
+      <form id="recipeForm" autocomplete="off">
+        <fieldset>
+          <legend>기본 정보</legend>
+          <div class="grid2">
+            <label class="full"><span class="req">실험 이름</span><input name="name" required></label>
+            <label>시편 ID<input name="sample_id"></label>
+            <label>용매<input name="solvent" list="solventList" placeholder="예: IPA"></label>
+            <label class="full">기판<input name="substrate" list="substrateList" placeholder="예: PET 필름, 유리 기판"></label>
+            <datalist id="solventList"></datalist>
+            <datalist id="substrateList"></datalist>
+            <label class="full">공정 순서
+              <select name="order">
+                <option value="vacuum_first">진공 배기 후 가열</option>
+                <option value="heat_first">가열 후 진공 배기</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>진공</legend>
+          <div class="grid2">
+            <label><span class="req">목표 압력 (kPa)</span><input name="vacuum.target_kpa" type="number" step="any" required></label>
+            <label>배기 제한 시간 (분)<input name="vacuum.pump_timeout_min" type="number" step="any" value="10"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>가열</legend>
+          <div class="grid2">
+            <label><span class="req">목표 온도 (°C)</span><input name="heating.target_c" type="number" step="any" required></label>
+            <label>승온 속도 (°C/분)<input name="heating.ramp_c_per_min" type="number" step="any" value="10"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>건조 종료 조건 (포토다이오드)</legend>
+          <div class="grid2">
+            <label>최소 유지 시간 (분)<input name="endpoint.min_hold_min" type="number" step="any" value="1"></label>
+            <label>최대 유지 시간 (분)<input name="endpoint.max_hold_min" type="number" step="any" value="60"></label>
+            <label>안정 판정 구간 (초)<input name="endpoint.stable_window_s" type="number" step="any" value="30"></label>
+            <label>신호 변동 허용폭 (%)<input name="endpoint.stable_band_pct" type="number" step="any" value="0.5"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>마무리</legend>
+          <div class="grid2">
+            <label>냉각 목표 온도 (°C)<input name="finish.cool_to_c" type="number" step="any" value="50"></label>
+            <label class="full">메모<textarea name="notes" rows="2"></textarea></label>
+          </div>
+        </fieldset>
+        <button class="btn primary block" type="submit">레시피 검토로 보내기</button>
+        <div class="msg-error" id="formError"></div>
+      </form>
+    </div>
+
+    <div class="body" id="tab-chat" hidden>
+      <p class="hint">실험 계획서 내용을 붙여 넣거나 조건을 말하듯 입력하세요. 예: “PET 기판 IPA 시편, 10 Torr까지 뽑고 분당 5도로 80도까지 올려서 건조”. 이 PC에서 도는 로컬 LLM이 값을 뽑고, 단위 변환과 규칙 검사는 온톨로지가 합니다.</p>
+      <div id="chatLog"></div>
+      <div class="chat-input">
+        <textarea id="chatText" rows="2" placeholder="Enter 전송 · Shift+Enter 줄바꿈"></textarea>
+        <button class="btn primary" id="chatSend">전송</button>
+      </div>
+      <div style="margin-top:8px"><button class="btn small" id="chatReset">새 대화</button></div>
+    </div>
+  </section>
+
+  <!-- ② 검토 -->
+  <section class="panel" id="review">
+    <h2><span class="step">02</span>레시피 검토 · 승인 <span id="sourceBadge"></span></h2>
+    <div class="body" id="reviewBody">
+      <div class="empty">양식이나 AI 채팅으로 레시피를 만들면<br>여기에서 검토하고 승인합니다.</div>
+    </div>
+  </section>
+
+  <!-- ③ 모니터링 -->
+  <section class="panel" id="monitor">
+    <h2><span class="step">03</span>공정 모니터링</h2>
+    <div class="body">
+      <div class="stepper" id="stepper"></div>
+      <div class="phase-line">
+        <span class="name" id="phaseName">—</span>
+        <span class="small muted mono" id="phaseElapsed"></span>
+        <span class="spacer"></span>
+        <span class="small muted mono" id="runId"></span>
+      </div>
+      <div class="readouts">
+        <div class="readout"><div class="label">스테이지 온도</div><div class="value" id="rTemp">—</div><div class="sub" id="rSp">설정 —</div></div>
+        <div class="readout"><div class="label">챔버 압력</div><div class="value" id="rPress">—</div><div class="sub" id="rPressTarget">kPa</div></div>
+        <div class="readout"><div class="label">포토다이오드</div><div class="value" id="rPd">—</div><div class="sub">ADC</div></div>
+        <div class="readout"><div class="label">개폐문</div><div class="value" id="rDoor">—</div><div class="sub" id="rRun">&nbsp;</div></div>
+      </div>
+      <div class="flags">
+        <span class="flag" id="fHeat">히터</span>
+        <span class="flag" id="fPump">진공 펌프</span>
+        <span class="flag" id="fVent">벤트 밸브</span>
+      </div>
+      <div class="meter" id="meter" hidden>
+        <div class="small"><span class="muted">용매 증발 판정</span> <span class="mono" id="meterText"></span></div>
+        <div class="track"><div class="fill" id="meterFill" style="width:0"></div></div>
+      </div>
+      <div class="chart">
+        <div class="title"><span><i style="background:var(--temp)"></i>온도 °C</span><span><i style="background:var(--sp)"></i>설정</span></div>
+        <canvas id="cTemp"></canvas>
+      </div>
+      <div class="chart">
+        <div class="title"><span><i style="background:var(--press)"></i>압력 kPa (로그)</span></div>
+        <canvas id="cPress"></canvas>
+      </div>
+      <div class="chart">
+        <div class="title"><span><i style="background:var(--pd)"></i>포토다이오드</span></div>
+        <canvas id="cPd"></canvas>
+      </div>
+      <div class="actions">
+        <button class="btn danger" id="abortBtn" disabled>비상 정지</button>
+        <button class="btn" id="openBtn" disabled>안전 개방 (벤트 후 문 열기)</button>
+      </div>
+      <div id="summary"></div>
+      <h3>이벤트</h3>
+      <ul id="events"></ul>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const RESTING = ["IDLE", "COMPLETE", "ABORTED"];
+const DEFAULT_PLAN = ["CLOSING_DOOR", "PUMPING", "HEATING", "DRYING", "COOLING", "VENTING", "OPENING_DOOR"];
+const DOOR_LABELS = { open: "열림", closed: "닫힘", moving: "이동 중", unknown: "알 수 없음" };
+
+const state = {
+  status: null,
+  telemetry: null,
+  review: null,        // { recipe, source, assumptions, validation }
+  draft: { values: {}, asked: [] },  // 채팅 사이에 들고 있는 레시피 초안 상태
+  turns: [],          // 이번 대화의 턴 { message, extracted, values } — 승인 때 학습 기록으로 보낸다
+  aiRecipe: null,     // AI가 마지막으로 만든 초안 — 승인된 레시피와 비교해 작업자의 수정을 남긴다
+  series: { t: [], temp: [], sp: [], p: [], pd: [] },
+  seriesRun: undefined,
+};
+
+function h(tag, attrs = {}, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of children.flat()) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  return el;
+}
+
+async function api(path, body) {
+  const res = await fetch(path, body === undefined ? {} : {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const d = data.detail;
+    const msg = Array.isArray(d) ? d.map((e) => `${e.loc.slice(1).join(".")}: ${e.msg}`).join("\n") : d || res.statusText;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+const fmt = (v, digits = 1) => (v == null || Number.isNaN(v) ? "—" : Number(v).toFixed(digits));
+const fmtDuration = (s) => {
+  if (s == null) return "";
+  s = Math.max(0, Math.round(s));
+  const m = Math.floor(s / 60), r = s % 60;
+  return m >= 60 ? `${Math.floor(m / 60)}시간 ${m % 60}분` : `${m}:${String(r).padStart(2, "0")}`;
+};
+const phaseLabel = (p) => state.status?.phase_labels?.[p] ?? p;
+
+/* ---------------------------------------------------------------- 탭 */
+document.querySelectorAll(".tabs button").forEach((btn) => btn.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b === btn));
+  $("tab-form").hidden = btn.dataset.tab !== "form";
+  $("tab-chat").hidden = btn.dataset.tab !== "chat";
+}));
+
+/* ---------------------------------------------------------------- 양식 */
+function formToRecipe() {
+  const recipe = {};
+  for (const el of $("recipeForm").elements) {
+    if (!el.name) continue;
+    let value = el.value.trim();
+    if (el.type === "number") {
+      if (value === "") continue;
+      value = Number(value);
+    }
+    const path = el.name.split(".");
+    let node = recipe;
+    for (const key of path.slice(0, -1)) node = node[key] ??= {};
+    node[path.at(-1)] = value;
+  }
+  return recipe;
+}
+
+function recipeToForm(recipe) {
+  for (const el of $("recipeForm").elements) {
+    if (!el.name) continue;
+    const value = el.name.split(".").reduce((node, key) => node?.[key], recipe);
+    if (value !== undefined) el.value = value;
+  }
+}
+
+$("recipeForm").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  $("formError").textContent = "";
+  try {
+    await setReview(formToRecipe(), "form", []);
+    $("review").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } catch (e) {
+    $("formError").textContent = e.message;
+  }
+});
+
+/* ---------------------------------------------------------------- 채팅 */
+function addBubble(kind, text) {
+  const el = h("div", { class: `bubble ${kind}` }, text);
+  $("chatLog").append(el);
+  $("chatLog").scrollTop = $("chatLog").scrollHeight;
+  return el;
+}
+
+async function sendChat() {
+  const text = $("chatText").value.trim();
+  if (!text) return;
+  $("chatText").value = "";
+  $("chatSend").disabled = true;
+  addBubble("user", text);
+  const pending = addBubble("ai", "로컬 LLM이 계획을 읽는 중…");
+  try {
+    const result = await api("/api/chat", { message: text, draft: state.draft });
+    state.draft = result.draft;
+    state.turns.push({ message: text, extracted: result.extracted, values: result.values });
+    if (result.recipe) state.aiRecipe = result.recipe;
+    pending.textContent = result.reply;
+    if (result.notes.length) {
+      $("chatLog").append(h("ul", { class: "bubble-notes" }, result.notes.map((n) => h("li", {}, n))));
+      $("chatLog").scrollTop = $("chatLog").scrollHeight;
+    }
+    if (result.recipe) {
+      recipeToForm(result.recipe);
+      await setReview(result.recipe, "ai", result.notes);
+    }
+  } catch (e) {
+    pending.remove();
+    addBubble("err", `오류: ${e.message}`);
+    $("chatText").value = text;
+  } finally {
+    $("chatSend").disabled = false;
+    $("chatText").focus();
+  }
+}
+
+$("chatSend").addEventListener("click", sendChat);
+$("chatText").addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter" && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); sendChat(); }
+});
+$("chatReset").addEventListener("click", () => {
+  state.draft = { values: {}, asked: [] }; state.turns = []; state.aiRecipe = null; $("chatLog").replaceChildren();
+});
+
+/* ---------------------------------------------------------------- 검토 */
+async function setReview(recipe, source, assumptions) {
+  const validation = await api("/api/recipe/validate", recipe);
+  state.review = { recipe: validation.recipe, source, assumptions, validation };
+  renderReview();
+}
+
+function renderReview() {
+  const rv = state.review;
+  const body = $("reviewBody");
+  if (!rv) return;
+  const { recipe: r, validation: v } = rv;
+  $("sourceBadge").replaceChildren(h("span", { class: "badge" }, rv.source === "ai" ? "AI 초안" : "양식"));
+
+  const pump = h("li", {}, h("div", {}, h("b", {}, "진공 배기"), ` → ${r.vacuum.target_kpa} kPa`,
+    h("div", { class: "kv" }, `제한 시간 ${r.vacuum.pump_timeout_min}분 · 도달 후 목표 압력 유지`)));
+  const heat = h("li", {}, h("div", {}, h("b", {}, "승온"), ` → ${r.heating.target_c} °C`,
+    h("div", { class: "kv" }, `${r.heating.ramp_c_per_min} °C/분`)));
+  const e = r.endpoint;
+  const steps = h("ol", { class: "steps" },
+    h("li", {}, h("div", {}, h("b", {}, "문 닫기"))),
+    r.order === "heat_first" ? [heat, pump] : [pump, heat],
+    h("li", {}, h("div", {}, h("b", {}, "건조 유지"), " — 용매 증발 완료까지",
+      h("div", { class: "kv" }, `포토다이오드 신호의 변동폭이 ${e.stable_window_s}초 동안 ${e.stable_band_pct}% 이내로 유지되면 종료`),
+      h("div", { class: "kv" }, `최소 ${e.min_hold_min}분 · 최대 ${e.max_hold_min}분 (넘으면 경고 후 종료)`))),
+    h("li", {}, h("div", {}, h("b", {}, "냉각"), ` → ${r.finish.cool_to_c} °C 이하`)),
+    h("li", {}, h("div", {}, h("b", {}, "벤트 → 문 열기"))),
+  );
+
+  const meta = h("div", { class: "kv", style: "margin-bottom:10px" },
+    h("div", {}, h("b", { style: "color:var(--text)" }, r.name)),
+    [r.sample_id && `시편 ${r.sample_id}`, r.solvent && `용매 ${r.solvent}`, r.substrate && `기판 ${r.substrate}`,
+      `가열 구간 최대 ${v.max_active_min}분`].filter(Boolean).join(" · "),
+    r.notes ? h("div", {}, `메모: ${r.notes}`) : null,
+  );
+
+  const errors = v.issues.filter((i) => i.level === "error");
+  const warnings = v.issues.filter((i) => i.level === "warning");
+  const infos = v.issues.filter((i) => i.level === "info");
+  const list = (items) => h("ul", {}, items.map((text) => h("li", {}, text)));
+  const boxes = [];
+  if (rv.assumptions?.length) boxes.push(h("div", { class: "box warn" },
+    h("h4", {}, "AI와 온톨로지가 해석하거나 기본값으로 채운 값 — 계획서와 맞는지 확인하세요"), list(rv.assumptions)));
+  if (errors.length) boxes.push(h("div", { class: "box bad" },
+    h("h4", {}, "실행할 수 없는 항목 (온톨로지 규칙 위반)"), list(errors.map((i) => i.message))));
+  if (warnings.length) boxes.push(h("div", { class: "box warn" }, h("h4", {}, "주의"), list(warnings.map((i) => i.message))));
+  if (!errors.length) boxes.push(h("div", { class: "box ok" }, h("h4", {}, "온톨로지 규칙 검사 통과 (장비·재료 한계)")));
+  if (infos.length || v.facts.length) boxes.push(h("div", { class: "box info" },
+    h("h4", {}, "온톨로지 지식"), list([...v.facts, ...infos.map((i) => i.message)])));
+  const sr = v.similar_runs;
+  boxes.push(h("div", { class: "box plain" }, h("h4", {}, "과거 유사 실험 (지식그래프)"),
+    sr.count ? [h("div", { class: "kv" }, sr.summary), list(sr.runs.map((run) =>
+      `${run.started_at.slice(0, 16).replace("T", " ")} · ${run.target_c}°C, ${run.target_kpa} kPa · ` +
+      (run.result === "COMPLETE" ? (run.endpoint_detected ? `건조 ${run.drying_min}분` : "종료점 미검출") : "비상 정지")))]
+      : h("div", { class: "kv" }, "같은 용매와 비슷한 온도로 실행한 기록이 아직 없습니다.")));
+
+  const approver = h("input", { id: "approver", placeholder: "승인자 이름", value: localStorageGet("approver") });
+  const loaded = h("input", { type: "checkbox", id: "loaded" });
+  const startBtn = h("button", { class: "btn primary block", id: "startBtn" }, "승인하고 공정 시작");
+  const err = h("div", { class: "msg-error", id: "startError" });
+
+  const refresh = () => {
+    const phase = state.status?.phase;
+    const reason = errors.length ? "검증 오류를 먼저 고치세요"
+      : !RESTING.includes(phase) ? "공정 진행 중"
+      : state.status?.connection_error ? "장비 연결 안 됨"
+      : null;
+    startBtn.disabled = !!reason || !approver.value.trim() || !loaded.checked;
+    startBtn.title = reason ?? "";
+  };
+  approver.addEventListener("input", refresh);
+  loaded.addEventListener("change", refresh);
+  startBtn.addEventListener("click", async () => {
+    err.textContent = "";
+    startBtn.disabled = true;
+    try {
+      localStorageSet("approver", approver.value.trim());
+      // AI 초안을 승인하면 (대화 → 승인된 값)을 학습 기록으로 남긴다. 양식 입력은 대화가 없으므로 보내지 않는다
+      const feedback = rv.source === "ai" && state.turns.length ? { turns: state.turns, ai_recipe: state.aiRecipe } : null;
+      const started = await api("/api/runs", { recipe: r, approved_by: approver.value.trim(), feedback });
+      if (started.example_id) addBubble("ai", started.corrected
+        ? "승인하신 수정 내용을 학습 기록에 남겼어요. 다음부터 비슷한 문장에 참고해요."
+        : "승인하신 초안을 학습 기록에 남겼어요. 다음부터 비슷한 문장에 참고해요.");
+      loaded.checked = false;
+      $("monitor").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } catch (e) {
+      err.textContent = e.message;
+    }
+    refresh();
+  });
+  state.refreshStart = refresh;
+
+  body.replaceChildren(meta, steps, ...boxes,
+    h("label", {}, "승인자", approver),
+    h("label", { class: "check" }, loaded, "시편을 스테이지에 올렸고, 개폐문 주변에 장애물이 없습니다."),
+    startBtn, err,
+  );
+  refresh();
+}
+
+function localStorageGet(key) { try { return localStorage.getItem(key) ?? ""; } catch { return ""; } }
+function localStorageSet(key, value) { try { localStorage.setItem(key, value); } catch {} }
+
+/* ---------------------------------------------------------------- 모니터링 */
+function renderStatus() {
+  const s = state.status;
+  if (!s) return;
+  const sim = s.driver === "SimulatedChamber";
+  $("driverBadge").textContent = sim ? "시뮬레이터 (배속)" : "아두이노";
+  $("driverBadge").className = `badge ${sim ? "warn" : ""}`;
+  $("connBadge").textContent = s.connection_error ?? "장비 연결됨";
+  $("connBadge").className = `badge ${s.connection_error ? "bad" : "ok"}`;
+  $("runId").textContent = s.run_id ?? "";
+
+  const plan = s.plan.length ? s.plan : DEFAULT_PLAN;
+  const failedPhase = s.phase === "ABORTED" ? [...s.events].reverse().find((e) => e.level === "error")?.phase : null;
+  const current = plan.indexOf(s.phase === "ABORTED" ? failedPhase : s.phase);
+  $("stepper").replaceChildren(...plan.map((p, i) => {
+    let cls = "";
+    if (s.phase === "COMPLETE") cls = "done";
+    else if (s.phase === "ABORTED") cls = i < current ? "done" : i === current ? "fail" : "";
+    else if (current >= 0) cls = i < current ? "done" : i === current ? "cur" : "";
+    return h("div", { class: cls }, phaseLabel(p));
+  }));
+  $("phaseName").textContent = s.phase_label;
+  $("phaseName").style.color = s.phase === "ABORTED" ? "var(--bad)" : s.phase === "COMPLETE" ? "var(--ok)" : "";
+
+  $("events").replaceChildren(...[...s.events].reverse().map((e) =>
+    h("li", {}, h("span", { class: "time" }, e.time.slice(11)), h("span", { class: e.level }, e.message))));
+
+  const sum = s.summary;
+  $("summary").replaceChildren(sum ? h("div", { class: `box ${sum.result === "COMPLETE" ? (sum.endpoint_detected ? "ok" : "warn") : "bad"}` },
+    h("h4", {}, sum.result === "COMPLETE" ? "공정 결과" : "비상 정지 결과"),
+    h("ul", {},
+      sum.reason && h("li", {}, `사유: ${sum.reason}`),
+      h("li", {}, `종료점 검출: ${sum.endpoint_detected == null ? "—" : sum.endpoint_detected ? "예 (포토다이오드 안정)" : "아니오 (최대 시간 도달)"}`),
+      h("li", {}, `건조 시간 ${fmt(sum.drying_min)}분 · 전체 ${fmt(sum.process_min)}분`),
+      h("li", {}, `최고 온도 ${fmt(sum.max_temp_c)} °C · 최저 압력 ${fmt(sum.min_pressure_kpa, 2)} kPa`),
+      h("li", { class: "mono small muted" }, `기록: process_ai/runs/${sum.run_id}/`),
+    )) : "");
+  renderButtons();
+  state.refreshStart?.();
+}
+
+function renderButtons() {
+  const s = state.status, t = state.telemetry;
+  const phase = t?.phase ?? s?.phase;
+  const active = phase && !RESTING.includes(phase);
+  $("abortBtn").disabled = !active;
+  $("openBtn").disabled = active || !t || t.door === "open" || !!s?.connection_error;
+}
+
+function renderTelemetry(t) {
+  state.telemetry = t;
+  const r = state.status?.recipe;
+  $("rTemp").textContent = `${fmt(t.temp_c)} °C`;
+  $("rSp").textContent = t.setpoint_c == null ? "설정 —" : `설정 ${fmt(t.setpoint_c)} °C`;
+  $("rPress").textContent = fmt(t.pressure_kpa, t.pressure_kpa < 10 ? 2 : 1);
+  $("rPressTarget").textContent = r && !RESTING.includes(t.phase) ? `kPa · 목표 ${r.vacuum.target_kpa}` : "kPa";
+  $("rPd").textContent = fmt(t.photodiode, 0);
+  $("rDoor").textContent = DOOR_LABELS[t.door] ?? t.door;
+  $("rRun").textContent = t.run_elapsed_s != null ? `공정 ${fmtDuration(t.run_elapsed_s)}` : " ";
+  $("phaseElapsed").textContent = t.phase_elapsed_s != null ? `단계 ${fmtDuration(t.phase_elapsed_s)}` : "";
+  $("fHeat").classList.toggle("on", t.heater_on);
+  $("fPump").classList.toggle("on", t.pump_on);
+  $("fVent").classList.toggle("on", t.vent_open);
+
+  const ep = t.phase === "DRYING" ? t.endpoint : null;  // 판정은 건조 단계에서만 쓰인다
+  $("meter").hidden = !ep;
+  if (ep) {
+    $("meterText").textContent = ep.variation_pct == null ? "데이터 수집 중"
+      : `변동 ${ep.variation_pct.toFixed(2)}% / 허용 ${ep.band_pct}% · 구간 ${Math.floor(ep.span_s)}/${ep.window_s}초${ep.stable ? " · 안정" : ""}`;
+    // 변동폭이 허용폭에 가까울수록 막대가 찬다
+    const closeness = ep.variation_pct == null ? 0 : Math.min(ep.band_pct / Math.max(ep.variation_pct, 1e-9), 1);
+    $("meterFill").style.width = `${closeness * 100}%`;
+    $("meterFill").classList.toggle("stable", ep.stable);
+  }
+
+  pushSeries(t);
+  renderButtons();
+}
+
+function pushSeries(t) {
+  const runKey = state.status?.run_id ?? null;
+  if (state.seriesRun !== runKey) {
+    state.series = { t: [], temp: [], sp: [], p: [], pd: [] };
+    state.seriesRun = runKey;
+  }
+  const s = state.series;
+  s.t.push(t.t); s.temp.push(t.temp_c); s.sp.push(t.setpoint_c); s.p.push(t.pressure_kpa); s.pd.push(t.photodiode);
+  if (s.t.length > 4000) for (const k in s) s[k] = s[k].filter((_, i) => i % 2 === 0);
+  scheduleDraw();
+}
+
+let drawPending = false;
+function scheduleDraw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(() => {
+    drawPending = false;
+    const s = state.series;
+    const css = getComputedStyle(document.documentElement);
+    const color = (name) => css.getPropertyValue(name).trim();
+    drawChart($("cTemp"), s.t, [{ values: s.temp, color: color("--temp") }, { values: s.sp, color: color("--sp"), dash: [4, 4] }]);
+    drawChart($("cPress"), s.t, [{ values: s.p, color: color("--press") }], { log: true });
+    drawChart($("cPd"), s.t, [{ values: s.pd, color: color("--pd") }]);
+  });
+}
+
+function drawChart(canvas, ts, series, { log = false } = {}) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, hgt = canvas.clientHeight;
+  if (canvas.width !== w * dpr) { canvas.width = w * dpr; canvas.height = hgt * dpr; }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, hgt);
+  if (ts.length < 2) return;
+
+  const tf = log ? (v) => Math.log10(Math.max(v, 1e-3)) : (v) => v;
+  const all = series.flatMap((s) => s.values.filter((v) => v != null).map(tf));
+  let lo = Math.min(...all), hi = Math.max(...all);
+  if (hi - lo < 1e-6) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const t0 = ts[0], t1 = ts.at(-1);
+  const L = 44, R = 8, T = 6, B = 16;
+  const x = (t) => L + (t - t0) / (t1 - t0 || 1) * (w - L - R);
+  const y = (v) => T + (1 - (tf(v) - lo) / (hi - lo)) * (hgt - T - B);
+
+  ctx.font = "10px ui-monospace, Menlo, monospace";
+  ctx.fillStyle = "#4a5260"; ctx.strokeStyle = "#242a36"; ctx.lineWidth = 1;
+  for (let i = 0; i <= 3; i++) {
+    const vv = lo + (hi - lo) * (i / 3);
+    const yy = T + (1 - i / 3) * (hgt - T - B);
+    ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(w - R, yy); ctx.stroke();
+    const label = log ? 10 ** vv : vv;
+    ctx.fillText(label >= 100 ? label.toFixed(0) : label >= 1 ? label.toFixed(1) : label.toFixed(2), 4, yy + 3);
+  }
+  ctx.fillText(`${((t1 - t0) / 60).toFixed(1)}분`, w - R - 40, hgt - 4);
+
+  for (const s of series) {
+    ctx.strokeStyle = s.color; ctx.lineWidth = 1.6; ctx.setLineDash(s.dash ?? []);
+    ctx.beginPath();
+    let pen = false;
+    s.values.forEach((v, i) => {
+      if (v == null) { pen = false; return; }
+      pen ? ctx.lineTo(x(ts[i]), y(v)) : ctx.moveTo(x(ts[i]), y(v));
+      pen = true;
+    });
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+}
+window.addEventListener("resize", scheduleDraw);
+
+$("abortBtn").addEventListener("click", () => api("/api/runs/abort", {}).catch((e) => alert(e.message)));
+$("openBtn").addEventListener("click", () => api("/api/door/open", {}).catch((e) => alert(e.message)));
+
+/* ---------------------------------------------------------------- 실시간 연결 */
+async function refreshStatus() {
+  try { state.status = await api("/api/status"); renderStatus(); } catch {}
+}
+
+function connect() {
+  const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/process`);
+  ws.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    if (data.type === "status") {
+      refreshStatus();
+      if (data.telemetry) renderTelemetry(data.telemetry);
+    } else if (data.type === "telemetry") {
+      const phaseChanged = state.status && state.status.phase !== data.phase;
+      if (phaseChanged) { state.status.phase = data.phase; refreshStatus(); }
+      renderTelemetry(data);
+    } else if (data.type === "event") {
+      refreshStatus();
+    } else if (data.type === "connection") {
+      if (state.status) { state.status.connection_error = data.error; renderStatus(); }
+    }
+  };
+  ws.onclose = () => {
+    $("connBadge").textContent = "서버 연결 끊김";
+    $("connBadge").className = "badge bad";
+    setTimeout(connect, 2000);
+  };
+}
+
+async function refreshLlmStatus() {
+  const badge = $("llmBadge");
+  try {
+    const s = await api("/api/llm/status");
+    badge.textContent = s.ok ? `로컬 LLM: ${s.model}` : "로컬 LLM 연결 안 됨";
+    badge.className = `badge ${s.ok ? "ok" : "bad"}`;
+    badge.title = s.ok ? s.url : s.error;
+  } catch {
+    badge.textContent = "로컬 LLM 확인 실패";
+    badge.className = "badge bad";
+  }
+}
+
+async function loadMaterials() {
+  try {
+    const m = await api("/api/knowledge/materials");
+    $("solventList").replaceChildren(...m.solvents.map((v) => h("option", { value: v })));
+    $("substrateList").replaceChildren(...m.substrates.map((v) => h("option", { value: v })));
+  } catch {}
+}
+
+setInterval(() => { $("clock").textContent = new Date().toLocaleTimeString("ko-KR"); }, 1000);
+setInterval(refreshLlmStatus, 15000);
+refreshLlmStatus();
+loadMaterials();
+connect();
+</script>
+</body>
+</html>

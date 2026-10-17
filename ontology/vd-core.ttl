@@ -1,0 +1,670 @@
+# 진공 가열 건조 공정 온톨로지 — 핵심 개념 (TBox)
+#
+# "이 분야에 어떤 종류의 것들이 있고, 서로 어떻게 연결되는가"를 정의한다.
+# 실제 장비·재료 값은 vd-equipment.ttl, vd-materials.ttl (ABox)에 있다.
+#
+# 표준 어휘를 재사용한다.
+#   SOSA/SSN (W3C)  센서·액추에이터        sosa:
+#   PROV-O (W3C)    실행 이력·책임 추적     prov:
+#   QUDT            단위·물리량 종류       qudt:, unit:, quantitykind:
+#   SKOS (W3C)      이름·동의어            skos:
+#   ISA-88          배치 공정 레시피 개념   (vd:Recipe 주석 참고)
+
+@prefix vd:           <http://example.org/vacuum-drying#> .
+@prefix owl:          <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:         <http://www.w3.org/2004/02/skos/core#> .
+@prefix sosa:         <http://www.w3.org/ns/sosa/> .
+@prefix prov:         <http://www.w3.org/ns/prov#> .
+@prefix qudt:         <http://qudt.org/schema/qudt/> .
+@prefix unit:         <http://qudt.org/vocab/unit/> .
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+@prefix dcterms:      <http://purl.org/dc/terms/> .
+
+<http://example.org/vacuum-drying> a owl:Ontology ;
+    rdfs:label "진공 가열 건조 공정 온톨로지"@ko , "Vacuum heating-drying process ontology"@en ;
+    dcterms:description "캡스톤 디자인 공정 자동화 AI의 지식 기반. 장비 구성과 한계, 재료 물성, 레시피 파라미터, 실행 이력을 표현한다."@ko ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# 주석 속성 — 온톨로지와 소프트웨어를 잇는 메타데이터
+#################################################################
+
+vd:jsonField a owl:AnnotationProperty ;
+    rdfs:label "JSON 필드"@ko ;
+    rdfs:comment "이 속성에 대응하는 레시피 JSON 필드 경로 (예: heating.target_c)."@ko .
+
+vd:required a owl:AnnotationProperty ;
+    rdfs:label "필수 입력"@ko ;
+    rdfs:comment "true이면 작업자가 값을 직접 알려줘야 한다. AI가 추측하거나 기본값을 쓰지 않는다."@ko .
+
+vd:extractionHint a owl:AnnotationProperty ;
+    rdfs:label "추출 지침"@ko ;
+    rdfs:comment "로컬 LLM 추출 프롬프트에 항목 설명으로 들어가는 문구. 무엇을 이 항목에 넣고 무엇을 넣지 말지 적는다."@ko .
+
+vd:valuePattern a owl:AnnotationProperty ;
+    rdfs:label "값 형식"@ko ;
+    rdfs:comment "문자열 파라미터 값이 맞아야 하는 정규식. LLM이 뽑은 값이 이 형식과 다르면 근거 검사가 뺀다."@ko .
+
+vd:defaultValue a owl:AnnotationProperty ;
+    rdfs:label "기본값"@ko ;
+    rdfs:comment "작업자가 말하지 않았을 때 쓰는 값. recipe.py의 기본값과 같아야 한다 (테스트가 확인)."@ko .
+
+vd:defaultRationale a owl:AnnotationProperty ;
+    rdfs:label "기본값 근거"@ko ;
+    rdfs:comment "기본값을 그렇게 정한 이유. 작업자가 '기본값이 뭘 바탕으로 정해졌어?'라고 물으면 그대로 보여 준다."@ko .
+
+vd:code a owl:AnnotationProperty ;
+    rdfs:label "코드 값"@ko ;
+    rdfs:comment "소프트웨어에서 이 개체를 가리킬 때 쓰는 문자열."@ko .
+
+vd:setpointFor a owl:AnnotationProperty ;
+    rdfs:label "설정 대상"@ko .
+
+vd:resolvesTo a owl:AnnotationProperty ;
+    rdfs:label "해석 기준 속성"@ko .
+
+qudt:hasUnit a owl:AnnotationProperty .
+qudt:hasQuantityKind a owl:AnnotationProperty .
+qudt:symbol a owl:AnnotationProperty .
+qudt:conversionMultiplier a owl:AnnotationProperty .
+qudt:conversionOffset a owl:AnnotationProperty .
+dcterms:source a owl:AnnotationProperty .
+
+#################################################################
+# 장비
+#################################################################
+
+sosa:Platform a owl:Class .
+sosa:Sensor a owl:Class .
+sosa:Actuator a owl:Class .
+sosa:ObservableProperty a owl:Class .
+sosa:observes a owl:ObjectProperty .
+
+vd:Equipment a owl:Class ;
+    rdfs:subClassOf sosa:Platform ;
+    rdfs:label "장비"@ko , "equipment"@en .
+
+vd:VacuumDryingChamber a owl:Class ;
+    rdfs:subClassOf vd:Equipment ;
+    rdfs:label "진공 가열 건조 챔버"@ko , "vacuum drying chamber"@en ;
+    rdfs:comment "가열 스테이지, 진공 펌프, 벤트 밸브, 자동 개폐문, 센서로 이루어진 장비."@ko .
+
+vd:Component a owl:Class ;
+    rdfs:label "구성품"@ko , "component"@en .
+
+vd:Heater a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Actuator ;
+    rdfs:label "히터"@ko , "heater"@en .
+
+vd:VacuumPump a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Actuator ;
+    rdfs:label "진공 펌프"@ko , "vacuum pump"@en .
+
+vd:VentValve a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Actuator ;
+    rdfs:label "벤트 밸브"@ko , "vent valve"@en .
+
+vd:AutomaticDoor a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Actuator ;
+    rdfs:label "자동 개폐문"@ko , "automatic door"@en .
+
+vd:ChamberSeal a owl:Class ;
+    rdfs:subClassOf vd:Component ;
+    rdfs:label "챔버 실링"@ko , "chamber seal"@en .
+
+vd:TemperatureSensor a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Sensor ;
+    rdfs:label "온도 센서"@ko , "temperature sensor"@en .
+
+vd:PressureSensor a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Sensor ;
+    rdfs:label "압력 센서"@ko , "pressure sensor"@en .
+
+vd:Photodiode a owl:Class ;
+    rdfs:subClassOf vd:Component , sosa:Sensor ;
+    rdfs:label "포토다이오드"@ko , "photodiode"@en .
+
+vd:hasComponent a owl:ObjectProperty ;
+    rdfs:domain vd:Equipment ;
+    rdfs:range vd:Component ;
+    rdfs:label "구성품"@ko .
+
+vd:StageTemperature a sosa:ObservableProperty ;
+    rdfs:label "스테이지 온도"@ko .
+
+vd:ChamberPressure a sosa:ObservableProperty ;
+    rdfs:label "챔버 압력"@ko .
+
+vd:FilmOpticalSignal a sosa:ObservableProperty ;
+    rdfs:label "막 광신호"@ko ;
+    rdfs:comment "용매가 증발하면서 변하는 시편의 반사·투과광 세기. 신호가 평탄해지면 건조 완료로 본다."@ko .
+
+# ---- 장비 운전 한계 ----
+
+vd:maxOperatingTemperature a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "최대 사용 온도"@ko ;
+    qudt:hasUnit unit:DEG_C ;
+    rdfs:comment "구성품이나 재료가 견딜 수 있는 최고 온도. 레시피 목표 온도는 장비 구성품과 기판의 이 값을 넘을 수 없다."@ko .
+
+vd:maxRampRate a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "최대 승온 속도"@ko ;
+    qudt:hasUnit unit:DEG_C-PER-MIN .
+
+vd:ultimatePressure a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "최저 도달 압력"@ko ;
+    qudt:hasUnit unit:KiloPA ;
+    rdfs:comment "진공 펌프로 도달할 수 있는 가장 낮은 챔버 압력."@ko .
+
+vd:ventedPressure a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "대기 개방 압력"@ko ;
+    qudt:hasUnit unit:KiloPA .
+
+vd:safeOpenTemperature a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "문 개방 허용 온도"@ko ;
+    qudt:hasUnit unit:DEG_C .
+
+vd:travelTimeout a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "이동 제한 시간"@ko ;
+    qudt:hasUnit unit:SEC .
+
+vd:overshootMargin a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "과열 허용 폭"@ko ;
+    qudt:hasUnit unit:DEG_C ;
+    rdfs:comment "목표 온도를 이만큼 넘으면 비상 정지한다."@ko .
+
+vd:maxProcessDuration a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "최대 공정 시간"@ko ;
+    qudt:hasUnit unit:MIN ;
+    rdfs:comment "문이 닫힌 뒤 건조가 끝날 때까지(가열이 켜진 구간) 허용하는 최대 시간."@ko .
+
+vd:heatTimeoutExtra a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "승온 여유 시간"@ko ;
+    qudt:hasUnit unit:MIN .
+
+vd:ventTimeout a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "벤트 제한 시간"@ko ;
+    qudt:hasUnit unit:SEC .
+
+vd:coolTimeout a owl:DatatypeProperty ;
+    rdfs:range xsd:double ;
+    rdfs:label "냉각 제한 시간"@ko ;
+    qudt:hasUnit unit:MIN .
+
+#################################################################
+# 재료
+#################################################################
+
+vd:Material a owl:Class ;
+    rdfs:label "재료"@ko , "material"@en .
+
+vd:Solvent a owl:Class ;
+    rdfs:subClassOf vd:Material ;
+    rdfs:label "용매"@ko , "solvent"@en .
+
+vd:Substrate a owl:Class ;
+    rdfs:subClassOf vd:Material ;
+    rdfs:label "기판"@ko , "substrate"@en .
+
+vd:Coating a owl:Class ;
+    rdfs:subClassOf vd:Material ;
+    rdfs:label "코팅 재료"@ko , "coating material"@en ;
+    rdfs:comment "기판 위에 올린 박막 재료(PEDOT:PSS, 포토레지스트 등). 말리는 대상이지만 기판도 용매도 아니다. LLM이 기판 칸에 넣으면 근거 검사가 뺀다."@ko .
+
+vd:casNumber a owl:DatatypeProperty ;
+    rdfs:domain vd:Material ;
+    rdfs:range xsd:string ;
+    rdfs:label "CAS 번호"@ko .
+
+vd:boilingPoint a owl:DatatypeProperty ;
+    rdfs:domain vd:Solvent ;
+    rdfs:range xsd:double ;
+    rdfs:label "끓는점 (1기압)"@ko ;
+    qudt:hasUnit unit:DEG_C .
+
+vd:flashPoint a owl:DatatypeProperty ;
+    rdfs:domain vd:Solvent ;
+    rdfs:range xsd:double ;
+    rdfs:label "인화점"@ko ;
+    qudt:hasUnit unit:DEG_C .
+
+vd:antoineA a owl:DatatypeProperty ;
+    rdfs:domain vd:Solvent ;
+    rdfs:range xsd:double ;
+    rdfs:label "Antoine 계수 A"@ko ;
+    rdfs:comment "Antoine 식 log10(P / mmHg) = A − B / (C + T / °C). 압력별 끓는점 추정에 쓴다."@ko .
+
+vd:antoineB a owl:DatatypeProperty ;
+    rdfs:domain vd:Solvent ;
+    rdfs:range xsd:double ;
+    rdfs:label "Antoine 계수 B"@ko .
+
+vd:antoineC a owl:DatatypeProperty ;
+    rdfs:domain vd:Solvent ;
+    rdfs:range xsd:double ;
+    rdfs:label "Antoine 계수 C"@ko .
+
+#################################################################
+# 정성적 설정값 — "최대 진공"처럼 숫자 없이 말하는 설정
+#################################################################
+
+vd:QualitativeSetpoint a owl:Class ;
+    rdfs:label "정성적 설정값"@ko ;
+    rdfs:comment "숫자 없이 말한 설정. vd:setpointFor 파라미터의 값을 장비 구성품의 vd:resolvesTo 속성값으로 바꾼다."@ko .
+
+vd:FullVacuum a vd:QualitativeSetpoint ;
+    skos:prefLabel "최대 진공"@ko , "full vacuum"@en ;
+    skos:altLabel "완전 진공"@ko , "풀 진공"@ko , "최고 진공"@ko , "최대한 진공"@ko , "maximum vacuum"@en ;
+    vd:setpointFor vd:targetPressure ;
+    vd:resolvesTo vd:ultimatePressure .
+
+#################################################################
+# 일반 명사 — 역할을 가리킬 뿐 재료 이름이 아닌 말
+#################################################################
+
+vd:GenericTerm a owl:Class ;
+    rdfs:label "일반 명사"@ko ;
+    rdfs:comment "'시편', '기판'처럼 역할을 가리키는 말. LLM이 이런 말을 용매·기판·시편 ID 칸에 넣으면 근거 검사가 뺀다."@ko .
+
+vd:SpecimenTerm a vd:GenericTerm ;
+    skos:prefLabel "시편"@ko ;
+    skos:altLabel "샘플"@ko , "시료"@ko , "sample"@en , "specimen"@en , "박막"@ko , "필름"@ko .
+
+vd:SubstrateTerm a vd:GenericTerm ;
+    skos:prefLabel "기판"@ko ;
+    skos:altLabel "substrate"@en , "웨이퍼"@ko , "wafer"@en .
+
+vd:SolventTerm a vd:GenericTerm ;
+    skos:prefLabel "용매"@ko ;
+    skos:altLabel "solvent"@en , "용액"@ko .
+
+vd:NoneTerm a vd:GenericTerm ;
+    skos:prefLabel "없음"@ko ;
+    skos:altLabel "미정"@ko , "모름"@ko , "none"@en , "n/a"@en , "null"@en , "unknown"@en , "?"@en , "-"@en .
+
+#################################################################
+# 레시피 (ISA-88 제어 레시피)
+#################################################################
+
+vd:Recipe a owl:Class ;
+    rdfs:label "레시피"@ko , "control recipe"@en ;
+    rdfs:comment "ISA-88의 제어 레시피(control recipe)에 해당한다. 한 번의 공정을 위한 설정값 묶음."@ko .
+
+vd:ProcessOrder a owl:Class ;
+    rdfs:label "공정 순서"@ko .
+
+vd:VacuumFirst a vd:ProcessOrder ;
+    rdfs:label "진공 배기 후 가열"@ko ;
+    skos:altLabel "진공 먼저"@ko , "배기 먼저"@ko , "먼저 진공"@ko , "먼저 배기"@ko , "진공 후 가열"@ko , "배기 후 가열"@ko ,
+                  "진공 잡고 가열"@ko , "진공 잡은 다음"@ko , "진공 다음 가열"@ko , "배기한 다음 가열"@ko , "진공을 먼저"@ko ,
+                  "vacuum first"@en , "pump down first"@en ;
+    vd:code "vacuum_first" .
+
+vd:HeatFirst a vd:ProcessOrder ;
+    rdfs:label "가열 후 진공 배기"@ko ;
+    skos:altLabel "가열 먼저"@ko , "예열 먼저"@ko , "먼저 가열"@ko , "먼저 예열"@ko , "예열 후 진공"@ko , "가열 후 진공"@ko ,
+                  "예열 후 배기"@ko , "가열 후 배기"@ko , "예열한 다음 진공"@ko , "가열한 다음 진공"@ko , "예열하고 진공"@ko ,
+                  "가열을 먼저"@ko , "예열을 먼저"@ko , "heat first"@en , "preheat first"@en ;
+    vd:code "heat_first" .
+
+vd:forEquipment a owl:ObjectProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range vd:Equipment ;
+    rdfs:label "대상 장비"@ko .
+
+vd:usesSolvent a owl:ObjectProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range vd:Solvent ;
+    rdfs:label "사용 용매"@ko .
+
+vd:usesSubstrate a owl:ObjectProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range vd:Substrate ;
+    rdfs:label "사용 기판"@ko .
+
+vd:processOrder a owl:ObjectProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range vd:ProcessOrder ;
+    rdfs:label "공정 순서"@ko ;
+    skos:definition "진공을 먼저 잡고 가열하는지, 가열을 먼저 하고 진공을 잡는지."@ko ;
+    vd:jsonField "order" .
+
+# ---- 레시피 파라미터: vd:jsonField가 있는 속성 ----
+# 라벨·동의어·단위 정의가 AI 추출 프롬프트, 단위 변환, 검증 메시지에 그대로 쓰인다.
+
+vd:recipeName a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:string ;
+    rdfs:label "실험 이름"@ko ;
+    skos:altLabel "실험명"@ko , "레시피 이름"@ko ;
+    vd:jsonField "name" .
+
+vd:sampleId a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:string ;
+    rdfs:label "시편 ID"@ko ;
+    skos:altLabel "시편 번호"@ko , "샘플 ID"@ko ;
+    vd:jsonField "sample_id" .
+
+vd:solventName a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:string ;
+    rdfs:label "용매"@ko ;
+    skos:definition "작업자가 말한 용매 이름. 온톨로지의 용매와 연결되면 vd:usesSolvent도 생긴다."@ko ;
+    vd:jsonField "solvent" .
+
+vd:substrateName a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:string ;
+    rdfs:label "기판"@ko ;
+    skos:definition "작업자가 말한 기판 이름. 온톨로지의 기판과 연결되면 vd:usesSubstrate도 생긴다."@ko ;
+    vd:jsonField "substrate" .
+
+vd:targetPressure a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "목표 압력"@ko ;
+    skos:altLabel "진공도"@ko , "진공 압력"@ko , "챔버 압력"@ko , "압력"@ko ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:hasUnit unit:KiloPA ;
+    vd:jsonField "vacuum.target_kpa" ;
+    vd:required true .
+
+vd:pumpTimeout a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "배기 제한 시간"@ko ;
+    skos:altLabel "펌핑 제한 시간"@ko ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:hasUnit unit:MIN ;
+    vd:jsonField "vacuum.pump_timeout_min" .
+
+vd:targetTemperature a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "목표 온도"@ko ;
+    skos:altLabel "건조 온도"@ko , "가열 온도"@ko , "설정 온도"@ko , "스테이지 온도"@ko , "온도"@ko ;
+    qudt:hasQuantityKind quantitykind:Temperature ;
+    qudt:hasUnit unit:DEG_C ;
+    vd:jsonField "heating.target_c" ;
+    vd:required true .
+
+vd:rampRate a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "승온 속도"@ko ;
+    skos:altLabel "가열 속도"@ko , "승온율"@ko , "램프 속도"@ko ;
+    qudt:hasQuantityKind quantitykind:TemperaturePerTime ;
+    qudt:hasUnit unit:DEG_C-PER-MIN ;
+    vd:jsonField "heating.ramp_c_per_min" .
+
+vd:minHoldDuration a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "최소 유지 시간"@ko ;
+    skos:altLabel "최소 건조 시간"@ko ;
+    skos:definition "목표 온도에 도달한 뒤 최소한 유지할 시간. 이 전에는 건조 완료로 판단하지 않는다."@ko ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:hasUnit unit:MIN ;
+    vd:jsonField "endpoint.min_hold_min" .
+
+vd:maxHoldDuration a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "최대 유지 시간"@ko ;
+    skos:altLabel "최대 건조 시간"@ko , "건조 시간"@ko , "유지 시간"@ko ;
+    skos:definition "건조 완료가 감지되지 않아도 이 시간이 지나면 건조를 끝낸다."@ko ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:hasUnit unit:MIN ;
+    vd:jsonField "endpoint.max_hold_min" .
+
+vd:stableWindow a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "안정 판정 구간"@ko ;
+    skos:altLabel "판정 구간"@ko ;
+    skos:definition "포토다이오드 신호가 이 시간 동안 평탄하면 건조 완료로 본다."@ko ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:hasUnit unit:SEC ;
+    vd:jsonField "endpoint.stable_window_s" .
+
+vd:stableBand a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "신호 변동 허용폭"@ko ;
+    skos:altLabel "변동 허용폭"@ko , "허용 변동률"@ko ;
+    qudt:hasQuantityKind quantitykind:DimensionlessRatio ;
+    qudt:hasUnit unit:PERCENT ;
+    vd:jsonField "endpoint.stable_band_pct" .
+
+vd:coolToTemperature a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:double ;
+    rdfs:label "냉각 목표 온도"@ko ;
+    skos:altLabel "냉각 온도"@ko , "꺼내는 온도"@ko ;
+    qudt:hasQuantityKind quantitykind:Temperature ;
+    qudt:hasUnit unit:DEG_C ;
+    vd:jsonField "finish.cool_to_c" .
+
+vd:notes a owl:DatatypeProperty ;
+    rdfs:domain vd:Recipe ;
+    rdfs:range xsd:string ;
+    rdfs:label "메모"@ko ;
+    vd:jsonField "notes" .
+
+# ---- 기본값과 그 근거 (vd:defaultValue, vd:defaultRationale) ----
+# 값은 recipe.py와 같아야 한다. 근거는 작업자에게 그대로 보여 주므로 솔직하게 적는다. 대부분 아직 예시값이다.
+
+vd:pumpTimeout vd:defaultValue 10.0 ;
+    vd:defaultRationale "시뮬레이터 기준 예시값이에요. 실제 펌프로 목표 압력까지 걸리는 시간을 재서 바꿔야 해요."@ko .
+vd:rampRate vd:defaultValue 10.0 ;
+    vd:defaultRationale "장비 최대 승온 속도의 절반으로 잡은 보수적인 예시값이에요. 시편이 급가열에 약하면 낮추세요."@ko .
+vd:minHoldDuration vd:defaultValue 1.0 ;
+    vd:defaultRationale "목표 온도에 닿자마자 신호가 평탄해 보여 건조 완료로 오판하는 것을 막는 최소 시간이에요."@ko .
+vd:maxHoldDuration vd:defaultValue 60.0 ;
+    vd:defaultRationale "건조 완료가 감지되지 않을 때 무한정 가열하지 않도록 둔 상한이에요. 용매와 시편에 맞게 조정하세요."@ko .
+vd:stableWindow vd:defaultValue 30.0 ;
+    vd:defaultRationale "시뮬레이터용 값이에요. 실제 시편의 포토다이오드 신호를 기록해서 정해야 해요."@ko .
+vd:stableBand vd:defaultValue 0.5 ;
+    vd:defaultRationale "시뮬레이터용 값이에요. 실제 신호의 잡음 수준을 보고 정해야 해요."@ko .
+vd:coolToTemperature vd:defaultValue 50.0 ;
+    vd:defaultRationale "문을 열어도 안전한 온도(장비 설정 60°C)보다 낮게 잡았어요."@ko .
+
+# ---- LLM 추출 지침 (vd:extractionHint) ----
+# 평가에서 작은 모델이 자주 헷갈린 항목에 경계를 적는다. 프롬프트의 항목 설명에 그대로 들어간다.
+
+# 작은 모델은 "X는 아니다" 같은 부정문을 보면 오히려 X를 넣는다. 지침은 긍정문으로, 넣을 것만 적는다.
+vd:recipeName vd:extractionHint "'실험명 ○○'처럼 이름이라고 밝힌 값만."@ko .
+vd:sampleId vd:extractionHint "'시편 번호 S-12'처럼 숫자가 든 식별 코드가 적힌 경우만. 대부분의 문장에는 없다."@ko .
+vd:solventName vd:extractionHint "말리려는 용매의 물질 이름."@ko .
+vd:substrateName vd:extractionHint "시편이 놓인 기판의 재료 이름(예: PET 필름, 실리콘 웨이퍼). 기판을 말하지 않은 문장이 많다."@ko .
+vd:sampleId vd:valuePattern "^(?=.*[0-9])[A-Za-z0-9가-힣_#./-]+$" .
+vd:processOrder vd:extractionHint "'먼저', '예열 후'처럼 순서를 직접 말한 경우만."@ko .
+vd:pumpTimeout vd:extractionHint "'배기 제한 시간'을 직접 말한 경우만. 유지·건조 시간은 여기에 넣지 않는다."@ko .
+vd:targetTemperature vd:extractionHint "건조할 때의 온도. 꺼내기 전에 식히는 온도는 coolToTemperature."@ko .
+vd:minHoldDuration vd:extractionHint "'최소'라고 말한 유지 시간만."@ko .
+vd:maxHoldDuration vd:extractionHint "'최대'라고 말한 유지 시간이나 그냥 '건조 시간', '유지 시간'."@ko .
+vd:coolToTemperature vd:extractionHint "꺼내기 전에 식힐 온도."@ko .
+vd:notes vd:extractionHint "공정 조건이 아닌 부가 정보만(예: 측정 계획). 요청 문장이나 다른 항목에 넣은 내용을 옮기지 않는다. 없으면 null."@ko .
+
+#################################################################
+# 실행 이력 (PROV-O) — 공정 한 번 = prov:Activity
+#################################################################
+
+prov:Activity a owl:Class .
+prov:Agent a owl:Class .
+prov:used a owl:ObjectProperty .
+prov:wasAssociatedWith a owl:ObjectProperty .
+prov:startedAtTime a owl:DatatypeProperty .
+prov:endedAtTime a owl:DatatypeProperty .
+
+vd:ProcessRun a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "공정 실행"@ko , "process run"@en ;
+    rdfs:comment "승인된 레시피(prov:used)로 승인자(prov:wasAssociatedWith)가 실행한 공정 한 번."@ko .
+
+vd:Operator a owl:Class ;
+    rdfs:subClassOf prov:Agent ;
+    rdfs:label "작업자"@ko , "operator"@en .
+
+vd:runId a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:string ;
+    rdfs:label "실행 ID"@ko .
+
+vd:result a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:string ;
+    rdfs:label "결과"@ko ;
+    rdfs:comment "COMPLETE 또는 ABORTED"@ko .
+
+vd:abortReason a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:string ;
+    rdfs:label "비상 정지 사유"@ko .
+
+vd:endpointDetected a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "종료점 검출 여부"@ko .
+
+vd:dryingDuration a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:double ;
+    rdfs:label "건조 시간"@ko ;
+    qudt:hasUnit unit:MIN .
+
+vd:processDuration a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:double ;
+    rdfs:label "공정 시간"@ko ;
+    qudt:hasUnit unit:MIN .
+
+vd:maxObservedTemperature a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:double ;
+    rdfs:label "최고 측정 온도"@ko ;
+    qudt:hasUnit unit:DEG_C .
+
+vd:minObservedPressure a owl:DatatypeProperty ;
+    rdfs:domain vd:ProcessRun ;
+    rdfs:range xsd:double ;
+    rdfs:label "최저 측정 압력"@ko ;
+    qudt:hasUnit unit:KiloPA .
+
+#################################################################
+# 단위 (QUDT 어휘 재사용)
+# 값_SI = (값 + conversionOffset) × conversionMultiplier
+# skos:altLabel은 작업자·AI가 쓰는 단위 표기. 대소문자와 공백은 무시하고 비교한다.
+#################################################################
+
+qudt:Unit a owl:Class .
+qudt:QuantityKind a owl:Class .
+
+quantitykind:Temperature a qudt:QuantityKind ; rdfs:label "온도"@ko .
+quantitykind:Pressure a qudt:QuantityKind ; rdfs:label "압력"@ko .
+quantitykind:Time a qudt:QuantityKind ; rdfs:label "시간"@ko .
+quantitykind:TemperaturePerTime a qudt:QuantityKind ; rdfs:label "온도 변화율"@ko .
+quantitykind:DimensionlessRatio a qudt:QuantityKind ; rdfs:label "비율"@ko .
+
+unit:DEG_C a qudt:Unit ;
+    qudt:symbol "°C" ;
+    qudt:hasQuantityKind quantitykind:Temperature ;
+    qudt:conversionMultiplier 1.0 ;
+    qudt:conversionOffset 273.15 ;
+    skos:altLabel "℃" , "도"@ko , "섭씨"@ko , "C" , "degC" , "celsius"@en .
+
+unit:KiloPA a qudt:Unit ;
+    qudt:symbol "kPa" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 1000.0 ;
+    skos:altLabel "킬로파스칼"@ko .
+
+unit:PA a qudt:Unit ;
+    qudt:symbol "Pa" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 1.0 ;
+    skos:altLabel "파스칼"@ko .
+
+unit:TORR a qudt:Unit ;
+    qudt:symbol "Torr" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 133.322 ;
+    skos:altLabel "토르"@ko .
+
+unit:MilliTORR a qudt:Unit ;
+    qudt:symbol "mTorr" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 0.133322 ;
+    skos:altLabel "밀리토르"@ko .
+
+unit:MilliM_HG a qudt:Unit ;
+    qudt:symbol "mmHg" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 133.322387 .
+
+unit:MilliBAR a qudt:Unit ;
+    qudt:symbol "mbar" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 100.0 ;
+    skos:altLabel "밀리바"@ko , "hPa" .
+
+unit:BAR a qudt:Unit ;
+    qudt:symbol "bar" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 100000.0 ;
+    skos:altLabel "바"@ko .
+
+unit:ATM a qudt:Unit ;
+    qudt:symbol "atm" ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:conversionMultiplier 101325.0 ;
+    skos:altLabel "기압"@ko .
+
+unit:SEC a qudt:Unit ;
+    qudt:symbol "s" ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:conversionMultiplier 1.0 ;
+    skos:altLabel "초"@ko , "sec" , "second"@en , "seconds"@en .
+
+unit:MIN a qudt:Unit ;
+    qudt:symbol "min" ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:conversionMultiplier 60.0 ;
+    skos:altLabel "분"@ko , "mins" , "minute"@en , "minutes"@en .
+
+unit:HR a qudt:Unit ;
+    qudt:symbol "h" ;
+    qudt:hasQuantityKind quantitykind:Time ;
+    qudt:conversionMultiplier 3600.0 ;
+    skos:altLabel "시간"@ko , "hr" , "hour"@en , "hours"@en .
+
+unit:PERCENT a qudt:Unit ;
+    qudt:symbol "%" ;
+    qudt:hasQuantityKind quantitykind:DimensionlessRatio ;
+    qudt:conversionMultiplier 0.01 ;
+    skos:altLabel "퍼센트"@ko , "프로"@ko .
+
+unit:DEG_C-PER-MIN a qudt:Unit ;
+    qudt:symbol "°C/min" ;
+    qudt:hasQuantityKind quantitykind:TemperaturePerTime ;
+    qudt:conversionMultiplier 0.0166666666667 ;
+    skos:altLabel "°C/분" , "℃/min" , "℃/분" , "도/분"@ko , "도/min" , "C/min" , "degC/min" .
+
+unit:DEG_C-PER-HR a qudt:Unit ;
+    qudt:symbol "°C/h" ;
+    qudt:hasQuantityKind quantitykind:TemperaturePerTime ;
+    qudt:conversionMultiplier 0.000277777777778 ;
+    skos:altLabel "°C/시간" , "℃/h" , "℃/시간" , "도/시간"@ko , "C/h" , "degC/h" .

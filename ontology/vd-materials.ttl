@@ -1,0 +1,139 @@
+# 재료 지식 (ABox) — 용매와 기판
+#
+# 용매: 끓는점(1기압), 인화점, Antoine 계수(mmHg, °C 기준)는 일반 화학 편람의 대표값이다.
+#       실험에 쓰기 전에 사용하는 제품의 SDS로 확인할 것.
+# 기판: vd:maxOperatingTemperature는 예시값이다. 공급사 데이터시트로 바꿀 것.
+#
+# 새 용매를 추가하면 채팅 인식, 물성 안내, 검증 규칙에 코드 수정 없이 바로 반영된다.
+
+@prefix vd:      <http://example.org/vacuum-drying#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# 용매
+#################################################################
+
+vd:Water a vd:Solvent ;
+    skos:prefLabel "물"@ko , "water"@en ;
+    skos:altLabel "증류수"@ko , "탈이온수"@ko , "DI water"@en , "H2O" ;
+    vd:casNumber "7732-18-5" ;
+    vd:boilingPoint 100.0 ;
+    vd:antoineA 8.07131 ; vd:antoineB 1730.63 ; vd:antoineC 233.426 .
+
+vd:Ethanol a vd:Solvent ;
+    skos:prefLabel "에탄올"@ko , "ethanol"@en ;
+    skos:altLabel "에틸 알코올"@ko , "EtOH" ;
+    vd:casNumber "64-17-5" ;
+    vd:boilingPoint 78.4 ;
+    vd:flashPoint 13.0 ;
+    vd:antoineA 8.20417 ; vd:antoineB 1642.89 ; vd:antoineC 230.300 .
+
+vd:Methanol a vd:Solvent ;
+    skos:prefLabel "메탄올"@ko , "methanol"@en ;
+    skos:altLabel "메틸 알코올"@ko , "MeOH" ;
+    vd:casNumber "67-56-1" ;
+    vd:boilingPoint 64.7 ;
+    vd:flashPoint 11.0 ;
+    vd:antoineA 8.08097 ; vd:antoineB 1582.271 ; vd:antoineC 239.726 .
+
+vd:Isopropanol a vd:Solvent ;
+    skos:prefLabel "이소프로판올"@ko , "isopropanol"@en ;
+    skos:altLabel "IPA" , "아이피에이"@ko , "2-프로판올"@ko , "2-propanol"@en ,
+                  "이소프로필 알코올"@ko , "isopropyl alcohol"@en ;
+    vd:casNumber "67-63-0" ;
+    vd:boilingPoint 82.5 ;
+    vd:flashPoint 12.0 ;
+    vd:antoineA 8.87829 ; vd:antoineB 2010.33 ; vd:antoineC 252.636 .
+
+vd:Acetone a vd:Solvent ;
+    skos:prefLabel "아세톤"@ko , "acetone"@en ;
+    vd:casNumber "67-64-1" ;
+    vd:boilingPoint 56.1 ;
+    vd:flashPoint -20.0 ;
+    vd:antoineA 7.11714 ; vd:antoineB 1210.595 ; vd:antoineC 229.664 .
+
+vd:Toluene a vd:Solvent ;
+    skos:prefLabel "톨루엔"@ko , "toluene"@en ;
+    vd:casNumber "108-88-3" ;
+    vd:boilingPoint 110.6 ;
+    vd:flashPoint 4.0 ;
+    vd:antoineA 6.95464 ; vd:antoineB 1344.8 ; vd:antoineC 219.482 .
+
+vd:Chlorobenzene a vd:Solvent ;
+    skos:prefLabel "클로로벤젠"@ko , "chlorobenzene"@en ;
+    skos:altLabel "CB" , "MCB" ;
+    vd:casNumber "108-90-7" ;
+    vd:boilingPoint 131.7 ;
+    vd:flashPoint 29.0 ;
+    vd:antoineA 6.97808 ; vd:antoineB 1431.83 ; vd:antoineC 217.55 .
+
+# 아래 두 용매는 Antoine 계수를 아직 넣지 않았다 (편람 값 확인 후 추가). 그때까지 압력별 끓는점 안내는 나오지 않는다.
+
+vd:PGMEA a vd:Solvent ;
+    skos:prefLabel "PGMEA"@ko , "propylene glycol methyl ether acetate"@en ;
+    skos:altLabel "프로필렌글리콜 메틸에테르 아세테이트"@ko , "PMA" , "1-methoxy-2-propyl acetate"@en ;
+    vd:casNumber "108-65-6" ;
+    vd:boilingPoint 146.0 ;
+    vd:flashPoint 42.0 ;
+    dcterms:source "SDS 대표값. 사용 제품의 SDS로 확인할 것" .
+
+vd:NMP a vd:Solvent ;
+    skos:prefLabel "NMP"@ko , "N-methyl-2-pyrrolidone"@en ;
+    skos:altLabel "N-메틸피롤리돈"@ko , "메틸피롤리돈"@ko , "1-methyl-2-pyrrolidone"@en , "N-methylpyrrolidone"@en ;
+    vd:casNumber "872-50-4" ;
+    vd:boilingPoint 202.0 ;
+    vd:flashPoint 91.0 ;
+    dcterms:source "SDS 대표값. 사용 제품의 SDS로 확인할 것" .
+
+#################################################################
+# 기판 (최대 사용 온도는 예시값)
+#################################################################
+
+vd:SodaLimeGlass a vd:Substrate ;
+    skos:prefLabel "유리 기판"@ko , "glass substrate"@en ;
+    skos:altLabel "유리"@ko , "글라스"@ko , "소다라임 유리"@ko , "glass"@en ;
+    vd:maxOperatingTemperature 400.0 ;
+    dcterms:source "예시값" .
+
+vd:ITOGlass a vd:Substrate ;
+    skos:prefLabel "ITO 유리"@ko , "ITO glass"@en ;
+    skos:altLabel "ITO" , "ITO 기판"@ko ;
+    vd:maxOperatingTemperature 300.0 ;
+    dcterms:source "예시값" .
+
+vd:SiliconWafer a vd:Substrate ;
+    skos:prefLabel "실리콘 웨이퍼"@ko , "silicon wafer"@en ;
+    skos:altLabel "웨이퍼"@ko , "Si 웨이퍼"@ko , "Si wafer"@en ;
+    vd:maxOperatingTemperature 1000.0 ;
+    dcterms:source "예시값" .
+
+vd:PETFilm a vd:Substrate ;
+    skos:prefLabel "PET 필름"@ko , "PET film"@en ;
+    skos:altLabel "PET" , "PET 기판"@ko , "폴리에틸렌 테레프탈레이트"@ko ;
+    vd:maxOperatingTemperature 120.0 ;
+    dcterms:source "예시값" .
+
+vd:PENFilm a vd:Substrate ;
+    skos:prefLabel "PEN 필름"@ko , "PEN film"@en ;
+    skos:altLabel "PEN" , "PEN 기판"@ko ;
+    vd:maxOperatingTemperature 150.0 ;
+    dcterms:source "예시값" .
+
+vd:PolyimideFilm a vd:Substrate ;
+    skos:prefLabel "폴리이미드 필름"@ko , "polyimide film"@en ;
+    skos:altLabel "PI" , "폴리이미드"@ko , "캡톤"@ko , "Kapton"@en ;
+    vd:maxOperatingTemperature 300.0 ;
+    dcterms:source "예시값" .
+
+#################################################################
+# 코팅 재료 — 기판 위에 올린 박막. 레시피 항목은 아니고, 기판·용매와 구분하는 데 쓴다
+#################################################################
+
+vd:PEDOTPSS a vd:Coating ;
+    skos:prefLabel "PEDOT:PSS"@ko , "PEDOT:PSS"@en ;
+    skos:altLabel "PEDOT" , "페도트"@ko , "poly(3,4-ethylenedioxythiophene) polystyrene sulfonate"@en .
+
+vd:Photoresist a vd:Coating ;
+    skos:prefLabel "포토레지스트"@ko , "photoresist"@en ;
+    skos:altLabel "PR" , "감광액"@ko , "포토레지스트 막"@ko .

@@ -1,0 +1,4447 @@
+[
+  {
+    "model": "google/gemma-4-e2b",
+    "cases": 85,
+    "passed": 83,
+    "field_accuracy": 0.995,
+    "passed_no_fill": 80,
+    "field_accuracy_no_fill": 0.981,
+    "hallucinations": 1,
+    "hallucinations_no_guard": 7,
+    "errors": 0,
+    "ontology_assists": 3,
+    "avg_latency_s": 10.72,
+    "by_category": {
+      "basic": {
+        "cases": 2,
+        "passed": 2,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "unit": {
+        "cases": 13,
+        "passed": 12,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "qualitative": {
+        "cases": 7,
+        "passed": 7,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 0.875
+      },
+      "followup": {
+        "cases": 6,
+        "passed": 6,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "multi": {
+        "cases": 10,
+        "passed": 10,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "english": {
+        "cases": 4,
+        "passed": 4,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "synonym": {
+        "cases": 8,
+        "passed": 7,
+        "field_accuracy": 0.968,
+        "field_accuracy_no_fill": 0.968
+      },
+      "irrelevant": {
+        "cases": 7,
+        "passed": 7,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "informal": {
+        "cases": 3,
+        "passed": 3,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "unknown": {
+        "cases": 1,
+        "passed": 1,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "question": {
+        "cases": 15,
+        "passed": 15,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "ambiguous": {
+        "cases": 2,
+        "passed": 2,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      },
+      "revise": {
+        "cases": 7,
+        "passed": 7,
+        "field_accuracy": 1.0,
+        "field_accuracy_no_fill": 1.0
+      }
+    },
+    "rows": [
+      {
+        "id": "basic",
+        "category": "basic",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.02,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "torr-ramp-substrate",
+        "category": "unit",
+        "expected": 5,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "rampRate",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "rampRate",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "톨루엔",
+          "substrateName": "PET 필름",
+          "targetPressure": 1.333,
+          "targetTemperature": 90.0,
+          "rampRate": 5.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "톨루엔",
+          "substrateName": "PET 필름",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 10.0,
+            "unit": "Torr"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": {
+            "value": 5.0,
+            "unit": "도/분"
+          },
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.83,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "mbar-hours",
+        "category": "unit",
+        "expected": 3,
+        "correct": [
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 70.0,
+          "maxHoldDuration": 60.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 50.0,
+            "unit": "mbar"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 70.0,
+            "unit": "°C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": {
+            "value": 1.0,
+            "unit": "시간"
+          },
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.55,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "full-vacuum",
+        "category": "qualitative",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetTemperature"
+        ],
+        "passed_no_fill": false,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올",
+          "targetTemperature": 60.0,
+          "targetPressure": 1.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "EtOH",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 60.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 1,
+        "latency_s": 11.21,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "heat-first",
+        "category": "qualitative",
+        "expected": 4,
+        "correct": [
+          "processOrder",
+          "targetTemperature",
+          "targetPressure",
+          "solventName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "processOrder",
+          "targetTemperature",
+          "targetPressure",
+          "solventName"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "클로로벤젠",
+          "processOrder": "heat_first",
+          "targetPressure": 2.0,
+          "targetTemperature": 100.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "클로로벤젠(CB, MCB)",
+          "substrateName": null,
+          "processOrder": "heat_first",
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 100.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.29,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "missing-temperature",
+        "category": "basic",
+        "expected": 2,
+        "correct": [
+          "solventName",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "아세톤",
+          "targetPressure": 3.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "아세톤",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 3.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.11,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-number",
+        "category": "followup",
+        "expected": 1,
+        "correct": [
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 85.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 85.0,
+            "unit": ""
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 7.97,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-torr",
+        "category": "followup",
+        "expected": 1,
+        "correct": [
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 0.9999
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 7.5,
+            "unit": "토르"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.16,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "endpoint-params",
+        "category": "multi",
+        "expected": 7,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "stableWindow",
+          "stableBand",
+          "minHoldDuration",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "stableWindow",
+          "stableBand",
+          "minHoldDuration",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0,
+          "minHoldDuration": 2.0,
+          "maxHoldDuration": 40.0,
+          "stableWindow": 20.0,
+          "stableBand": 1.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 2.0,
+            "unit": "분"
+          },
+          "maxHoldDuration": {
+            "value": 40.0,
+            "unit": "분"
+          },
+          "stableWindow": {
+            "value": 20.0,
+            "unit": "초"
+          },
+          "stableBand": {
+            "value": 1.0,
+            "unit": "%"
+          },
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 14.39,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "name-sample-cooling",
+        "category": "multi",
+        "expected": 5,
+        "correct": [
+          "recipeName",
+          "sampleId",
+          "targetPressure",
+          "targetTemperature",
+          "coolToTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "recipeName",
+          "sampleId",
+          "targetPressure",
+          "targetTemperature",
+          "coolToTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "recipeName": "PEDOT-07",
+          "sampleId": "S-12",
+          "targetPressure": 5.0,
+          "targetTemperature": 120.0,
+          "coolToTemperature": 40.0
+        },
+        "extracted": {
+          "recipeName": "PEDOT-07",
+          "sampleId": "S-12",
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 120.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": {
+            "value": 40.0,
+            "unit": "도"
+          },
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.91,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "english-mix",
+        "category": "english",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "rampRate"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "rampRate"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 4.0,
+          "targetTemperature": 75.0,
+          "rampRate": 3.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 4.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 75.0,
+            "unit": "°C"
+          },
+          "rampRate": {
+            "value": 3.0,
+            "unit": "°C/min"
+          },
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.76,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "unknown-solvent",
+        "category": "synonym",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "PGMEA",
+          "targetPressure": 5.0,
+          "targetTemperature": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "PGMEA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.74,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "water-glass",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "물",
+          "substrateName": "유리 기판",
+          "targetPressure": 20.0,
+          "targetTemperature": 60.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "DI water",
+          "substrateName": "유리 기판",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 20.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 60.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.79,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "atm-decimal",
+        "category": "unit",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 2.026,
+          "targetTemperature": 72.5
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 0.02,
+            "unit": "atm"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 72.5,
+            "unit": "℃"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.82,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "no-conditions",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 9.71,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "pa-units",
+        "category": "unit",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "메탄올",
+          "targetPressure": 3.0,
+          "targetTemperature": 65.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "메탄올",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 3000.0,
+            "unit": "Pa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 65.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.72,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "mtorr",
+        "category": "unit",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "클로로벤젠",
+          "substrateName": "ITO 유리",
+          "targetPressure": 0.9999,
+          "targetTemperature": 110.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "클로로벤젠(CB, MCB)",
+          "substrateName": "ITO 유리(ITO)",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 7500.0,
+            "unit": "mTorr"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 110.0,
+            "unit": "°C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.49,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "mmhg",
+        "category": "unit",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 2.0,
+          "targetTemperature": 70.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 15.0,
+            "unit": "mmHg"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 70.0,
+            "unit": "℃"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.2,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "bar",
+        "category": "unit",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 95.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 0.05,
+            "unit": "bar"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 95.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.44,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "seconds-hold",
+        "category": "unit",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0,
+          "maxHoldDuration": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": {
+            "value": 5400.0,
+            "unit": "초"
+          },
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.4,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "hours-decimal",
+        "category": "unit",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "minHoldDuration"
+        ],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올",
+          "targetPressure": 2.0,
+          "targetTemperature": 60.0,
+          "maxHoldDuration": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "에탄올",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 60.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 1.5,
+            "unit": "시간"
+          },
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.15,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "window-minutes",
+        "category": "unit",
+        "expected": 4,
+        "correct": [
+          "stableWindow",
+          "stableBand",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [
+          "maxHoldDuration"
+        ],
+        "intent": "plan",
+        "passed": false,
+        "correct_no_fill": [
+          "stableWindow",
+          "stableBand",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": false,
+        "hallucinated_no_guard": [
+          "minHoldDuration"
+        ],
+        "problems": [],
+        "values": {
+          "targetPressure": 4.0,
+          "targetTemperature": 85.0,
+          "stableWindow": 60.0,
+          "stableBand": 0.5,
+          "maxHoldDuration": 1.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 4.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 85.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 1.0,
+            "unit": "분"
+          },
+          "maxHoldDuration": null,
+          "stableWindow": {
+            "value": 1.0,
+            "unit": "분"
+          },
+          "stableBand": {
+            "value": 0.5,
+            "unit": "%"
+          },
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.25,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "etoh-pen",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올",
+          "substrateName": "PEN 필름",
+          "targetPressure": 6.0,
+          "targetTemperature": 70.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "EtOH",
+          "substrateName": "PEN 필름",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 6.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 70.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.31,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "di-water-si",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "물",
+          "substrateName": "실리콘 웨이퍼",
+          "targetPressure": 10.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "DI water",
+          "substrateName": "Si wafer",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 10.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.17,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "kapton-mcb",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "클로로벤젠",
+          "substrateName": "폴리이미드 필름",
+          "targetPressure": 3.0,
+          "targetTemperature": 130.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "MCB",
+          "substrateName": "Kapton",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 3.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 130.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.2,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "isopropyl-english",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "substrateName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "substrateName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "substrateName": "유리 기판",
+          "targetPressure": 5.0,
+          "targetTemperature": 60.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": "유리 기판",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 60.0,
+            "unit": "°C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.65,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "meoh-ramp",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "targetTemperature",
+          "targetPressure",
+          "rampRate"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetTemperature",
+          "targetPressure",
+          "rampRate"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "메탄올",
+          "targetPressure": 8.0,
+          "targetTemperature": 55.0,
+          "rampRate": 2.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "MeOH",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 8.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 55.0,
+            "unit": "도"
+          },
+          "rampRate": {
+            "value": 2.0,
+            "unit": "도/분"
+          },
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.53,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "ramp-pi",
+        "category": "synonym",
+        "expected": 4,
+        "correct": [
+          "targetTemperature",
+          "targetPressure",
+          "substrateName"
+        ],
+        "wrong": [
+          "rampRate"
+        ],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": false,
+        "correct_no_fill": [
+          "targetTemperature",
+          "targetPressure",
+          "substrateName"
+        ],
+        "passed_no_fill": false,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "substrateName": "폴리이미드 필름",
+          "targetPressure": 4.0,
+          "targetTemperature": 110.0,
+          "rampRate": 13.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": "PI 필름",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 4.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 110.0,
+            "unit": "도"
+          },
+          "rampRate": {
+            "value": 3.0,
+            "unit": "도/분"
+          },
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.35,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "full-vacuum-alt",
+        "category": "qualitative",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetTemperature"
+        ],
+        "passed_no_fill": false,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "톨루엔",
+          "targetTemperature": 90.0,
+          "targetPressure": 1.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "톨루엔",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 1,
+        "latency_s": 10.4,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "vacuum-first",
+        "category": "qualitative",
+        "expected": 3,
+        "correct": [
+          "processOrder",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "processOrder",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "processOrder": "vacuum_first",
+          "targetPressure": 4.0,
+          "targetTemperature": 75.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": "vacuum_first",
+          "targetPressure": {
+            "value": 4.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 75.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 10.89,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "preheat",
+        "category": "qualitative",
+        "expected": 4,
+        "correct": [
+          "processOrder",
+          "targetTemperature",
+          "targetPressure",
+          "solventName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "processOrder",
+          "targetTemperature",
+          "targetPressure",
+          "solventName"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "클로로벤젠",
+          "processOrder": "heat_first",
+          "targetPressure": 2.0,
+          "targetTemperature": 100.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "클로로벤젠(CB, MCB)",
+          "substrateName": null,
+          "processOrder": "heat_first",
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 100.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.19,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "max-vacuum-english",
+        "category": "qualitative",
+        "expected": 3,
+        "correct": [
+          "targetPressure",
+          "targetTemperature",
+          "solventName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "solventName"
+        ],
+        "passed_no_fill": false,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올",
+          "targetTemperature": 70.0,
+          "targetPressure": 1.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "에탄올",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 70.0,
+            "unit": "°C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 1,
+        "latency_s": 11.11,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "two-temps",
+        "category": "multi",
+        "expected": 3,
+        "correct": [
+          "targetTemperature",
+          "coolToTemperature",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "coolToTemperature",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0,
+          "coolToTemperature": 50.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": {
+            "value": 50.0,
+            "unit": "도"
+          },
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.84,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "two-durations",
+        "category": "multi",
+        "expected": 4,
+        "correct": [
+          "minHoldDuration",
+          "maxHoldDuration",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "minHoldDuration",
+          "maxHoldDuration",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 90.0,
+          "minHoldDuration": 3.0,
+          "maxHoldDuration": 25.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 3.0,
+            "unit": "분"
+          },
+          "maxHoldDuration": {
+            "value": 25.0,
+            "unit": "분"
+          },
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.74,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "order-swapped",
+        "category": "multi",
+        "expected": 4,
+        "correct": [
+          "targetTemperature",
+          "targetPressure",
+          "solventName",
+          "substrateName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "targetPressure",
+          "solventName",
+          "substrateName"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "substrateName": "PET 필름",
+          "targetPressure": 3.0,
+          "targetTemperature": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": "PET",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 3.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.24,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "correction",
+        "category": "multi",
+        "expected": 3,
+        "correct": [
+          "targetTemperature",
+          "substrateName",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "substrateName",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "substrateName": "PET 필름",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": "PET 필름",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.09,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "pump-timeout",
+        "category": "multi",
+        "expected": 4,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "pumpTimeout",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "pumpTimeout",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "아세톤",
+          "targetPressure": 5.0,
+          "pumpTimeout": 10.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "아세톤",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": {
+            "value": 10.0,
+            "unit": "분"
+          },
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.38,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-both",
+        "category": "followup",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 3.0,
+          "targetTemperature": 70.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 3.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 70.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.3,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-celsius",
+        "category": "followup",
+        "expected": 1,
+        "correct": [
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 95.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 95.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.44,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-revise",
+        "category": "followup",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.16,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "followup-mbar",
+        "category": "followup",
+        "expected": 1,
+        "correct": [
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 3.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 30.0,
+            "unit": "mbar"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 10.81,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "english-full",
+        "category": "english",
+        "expected": 6,
+        "correct": [
+          "solventName",
+          "substrateName",
+          "targetTemperature",
+          "targetPressure",
+          "rampRate",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "substrateName",
+          "targetTemperature",
+          "targetPressure",
+          "rampRate",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "톨루엔",
+          "substrateName": "실리콘 웨이퍼",
+          "targetPressure": 2.0,
+          "targetTemperature": 100.0,
+          "rampRate": 4.0,
+          "maxHoldDuration": 45.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "톨루엔",
+          "substrateName": "Si wafer",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 100.0,
+            "unit": "°C"
+          },
+          "rampRate": {
+            "value": 4.0,
+            "unit": "°C/min"
+          },
+          "minHoldDuration": null,
+          "maxHoldDuration": {
+            "value": 45.0,
+            "unit": "min"
+          },
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.61,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "english-torr",
+        "category": "english",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "아세톤",
+          "targetPressure": 2.0,
+          "targetTemperature": 50.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "acetone",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 15.0,
+            "unit": "Torr"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 50.0,
+            "unit": "C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.62,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "no-spaces",
+        "category": "informal",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.72,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "colloquial",
+        "category": "informal",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올",
+          "targetPressure": 7.0,
+          "targetTemperature": 60.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "EtOH",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 7.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 60.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 14.49,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "unknown-substrate",
+        "category": "unknown",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "NMP",
+          "substrateName": "구리 포일",
+          "targetPressure": 2.0,
+          "targetTemperature": 150.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "NMP",
+          "substrateName": "구리 포일",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 150.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.26,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "usage-question",
+        "category": "irrelevant",
+        "expected": 0,
+        "correct": [],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 7.86,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "same-as-before",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 8.53,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "only-sample",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "sampleId"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "sampleId"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "sampleId": "W-03"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": "W-03",
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 10.82,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "with-note",
+        "category": "multi",
+        "expected": 3,
+        "correct": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "substrateName"
+        ],
+        "problems": [
+          "기판 'PEDOT:PSS 박막': PEDOT:PSS는 코팅 재료라 기판에서 뺐습니다."
+        ],
+        "values": {
+          "solventName": "물",
+          "targetPressure": 5.0,
+          "targetTemperature": 120.0,
+          "notes": "건조 후 바로 4-point probe 측정 예정"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "물",
+          "substrateName": "PEDOT:PSS 박막",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 120.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": "건조 후 바로 4-point probe 측정 예정",
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 14.37,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-why-pressure",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 1.333
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 1.333,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 9.29,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-ramp-default",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 8.27,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-is-ok",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "substrateName": "PET 필름"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": "PET 필름",
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 8.12,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-explain-all",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 8.2,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-no-draft",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 7.36,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "revise-pressure",
+        "category": "question",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 10.38,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "other-thanks",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 9.93,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-paragraph",
+        "category": "multi",
+        "expected": 5,
+        "correct": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "coolToTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "solventName",
+          "targetPressure",
+          "targetTemperature",
+          "coolToTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "processOrder"
+        ],
+        "problems": [
+          "공정 순서 '가열 후 진공 배기': 문장에 순서 표현이 없어 뺐습니다."
+        ],
+        "values": {
+          "solventName": "물",
+          "substrateName": "ITO 유리",
+          "targetPressure": 5.0,
+          "targetTemperature": 120.0,
+          "coolToTemperature": 40.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "물",
+          "substrateName": "ITO 유리",
+          "processOrder": "heat_first",
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 120.0,
+            "unit": "°C"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": {
+            "value": 40.0,
+            "unit": "°C"
+          },
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.23,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-range",
+        "category": "ambiguous",
+        "expected": 1,
+        "correct": [
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.34,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-negation-order",
+        "category": "qualitative",
+        "expected": 4,
+        "correct": [
+          "processOrder",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "processOrder",
+          "solventName",
+          "targetPressure",
+          "targetTemperature"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "톨루엔",
+          "processOrder": "heat_first",
+          "targetPressure": 3.0,
+          "targetTemperature": 100.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "톨루엔",
+          "substrateName": null,
+          "processOrder": "heat_first",
+          "targetPressure": {
+            "value": 3.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 100.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.26,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-out-of-scope",
+        "category": "multi",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "processOrder"
+        ],
+        "problems": [
+          "공정 순서 '가열 후 진공 배기': 문장에 순서 표현이 없어 뺐습니다."
+        ],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": "heat_first",
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.34,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-lowercase-units",
+        "category": "unit",
+        "expected": 3,
+        "correct": [
+          "targetPressure",
+          "targetTemperature",
+          "solventName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature",
+          "solventName"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.49,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-two-samples",
+        "category": "ambiguous",
+        "expected": 1,
+        "correct": [
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 5.0,
+          "targetTemperature": 80.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 80.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.63,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-compound-time",
+        "category": "unit",
+        "expected": 3,
+        "correct": [
+          "targetTemperature",
+          "maxHoldDuration",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "maxHoldDuration",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "minHoldDuration"
+        ],
+        "problems": [],
+        "values": {
+          "targetPressure": 2.0,
+          "targetTemperature": 90.0,
+          "maxHoldDuration": 150.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 150.0,
+            "unit": "분"
+          },
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.84,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-english-pr",
+        "category": "english",
+        "expected": 4,
+        "correct": [
+          "substrateName",
+          "targetTemperature",
+          "targetPressure",
+          "maxHoldDuration"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "substrateName",
+          "targetTemperature",
+          "targetPressure",
+          "maxHoldDuration"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [
+          "minHoldDuration"
+        ],
+        "problems": [],
+        "values": {
+          "substrateName": "실리콘 웨이퍼",
+          "targetPressure": 2.0,
+          "targetTemperature": 110.0,
+          "maxHoldDuration": 20.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": "Si wafer",
+          "processOrder": null,
+          "targetPressure": {
+            "value": 2.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 110.0,
+            "unit": "C"
+          },
+          "rampRate": null,
+          "minHoldDuration": {
+            "value": 20.0,
+            "unit": "min"
+          },
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.38,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-no-spaces-2",
+        "category": "informal",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "targetPressure"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 5.0,
+          "targetTemperature": 90.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 5.0,
+            "unit": "kPa"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 90.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 14.19,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "p-torr-decimal",
+        "category": "unit",
+        "expected": 3,
+        "correct": [
+          "targetPressure",
+          "targetTemperature",
+          "solventName"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "targetTemperature",
+          "solventName"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "이소프로판올",
+          "targetPressure": 1.013,
+          "targetTemperature": 65.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "IPA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": {
+            "value": 7.6,
+            "unit": "Torr"
+          },
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 65.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "plan"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.79,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-relative-up",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 100.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 10.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.57,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-relative-down",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 0.833
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 9.59,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-absolute-ro",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 100.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 100.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 11.5,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-absolute-kkaji",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "targetTemperature",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetTemperature",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 120.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 120.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 13.33,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-half",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "targetPressure",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "targetPressure",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetPressure": 0.6665
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 8.74,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-solvent-swap",
+        "category": "revise",
+        "expected": 2,
+        "correct": [
+          "solventName",
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "revise",
+        "passed": true,
+        "correct_no_fill": [
+          "solventName",
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "에탄올"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "에탄올",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 9.48,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "r-add-order",
+        "category": "revise",
+        "expected": 1,
+        "correct": [
+          "processOrder"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "plan",
+        "passed": true,
+        "correct_no_fill": [
+          "processOrder"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "processOrder": "heat_first"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": "heat_first",
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 12.12,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-whatif-ok",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "targetTemperature": 200.0
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": {
+            "value": 200.0,
+            "unit": "도"
+          },
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "revise"
+        },
+        "ontology_assists": 0,
+        "latency_s": 10.93,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-whatif-no",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.92,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-material-substrate",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "substrateName": "PET 필름"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": "PET 필름",
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 4.83,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-material-solvent",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "톨루엔"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "톨루엔",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.8,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-compare",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.26,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-duration",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 4.45,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-next-step",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.85,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "q-material-no-draft",
+        "category": "question",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "question",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {
+          "solventName": "PGMEA"
+        },
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": "PGMEA",
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "question"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.38,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "o-greeting",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 4.49,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "o-start",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 5.09,
+        "model": "google/gemma-4-e2b"
+      },
+      {
+        "id": "o-reset",
+        "category": "irrelevant",
+        "expected": 1,
+        "correct": [
+          "intent"
+        ],
+        "wrong": [],
+        "hallucinated": [],
+        "intent": "other",
+        "passed": true,
+        "correct_no_fill": [
+          "intent"
+        ],
+        "passed_no_fill": true,
+        "hallucinated_no_guard": [],
+        "problems": [],
+        "values": {},
+        "extracted": {
+          "recipeName": null,
+          "sampleId": null,
+          "solventName": null,
+          "substrateName": null,
+          "processOrder": null,
+          "targetPressure": null,
+          "pumpTimeout": null,
+          "targetTemperature": null,
+          "rampRate": null,
+          "minHoldDuration": null,
+          "maxHoldDuration": null,
+          "stableWindow": null,
+          "stableBand": null,
+          "coolToTemperature": null,
+          "notes": null,
+          "intent": "other"
+        },
+        "ontology_assists": 0,
+        "latency_s": 3.57,
+        "model": "google/gemma-4-e2b"
+      }
+    ],
+    "tag": "v5-gemma"
+  }
+]

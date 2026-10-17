@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>LLM 알고리즘 블록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+  body { margin: 0; padding: 24px; background: #fff; color: #000;
+         font-family: "Times New Roman", "AppleMyungjo", serif; }
+  .alg { width: 760px; font-size: 14px; line-height: 1.6; margin-bottom: 48px; }
+  .alg .caption { border-top: 1.6px solid #000; border-bottom: 0.8px solid #000; padding: 3px 0; }
+  .alg .io { padding: 3px 0 1px; display: flex; gap: 6px; }
+  .alg .io b { flex: none; }
+  .alg ol { list-style: none; margin: 0; padding: 2px 0 4px; border-bottom: 1.6px solid #000; counter-reset: line; }
+  .alg li { display: flex; align-items: baseline; gap: 10px; counter-increment: line; }
+  .alg li::before { content: counter(line) ":"; flex: none; width: 24px; text-align: right; font-size: 12px; }
+  .alg .code { flex: 1 1 auto; padding-left: calc(var(--i, 0) * 1.5em); }
+  .alg .cmt { flex: none; white-space: nowrap; text-align: right; font-size: 13px; }
+  .fn { font-variant: small-caps; }
+  .alg .cmt::before { content: "▷ "; }
+  .notation { width: 760px; font-size: 14px; border-collapse: collapse; }
+  .notation caption { text-align: left; font-weight: bold; padding-bottom: 6px; }
+  .notation th, .notation td { border-top: 0.8px solid #000; padding: 4px 8px; text-align: left; vertical-align: top; }
+  .notation tr:first-child th { border-top: 1.6px solid #000; }
+  .notation tr:last-child td { border-bottom: 1.6px solid #000; }
+  .notation td:first-child { width: 110px; }
+  .only > :not(.shown) { display: none; }
+</style>
+</head>
+<body>
+
+<!-- 알고리즘 1 -->
+<div class="alg" id="alg1">
+  <div class="caption"><b>알고리즘 1</b>&nbsp; 온톨로지 기반 로컬 LLM 공정 레시피 생성</div>
+  <div class="io"><b>입력:</b><span>작업자 발화 $u$, 대화 상태 $D=(V, A)$, 온톨로지 $\mathcal{O}$, SHACL 규칙 $\mathcal{S}$, 로컬 LLM $\mathcal{M}$</span></div>
+  <div class="io"><b>출력:</b><span>레시피 초안 $R$, 검증 결과 $\mathcal{I}$, 응답 $y$, 갱신된 대화 상태 $D'$</span></div>
+  <ol>
+    <li><span class="code">$P \leftarrow \{\, p \mid (p,\ \texttt{vd:jsonField},\ \cdot) \in \mathcal{O} \,\}$</span><span class="cmt">레시피 파라미터 정의 조회</span></li>
+    <li><span class="code">$\Sigma \leftarrow \fn{Schema}(P)$;&nbsp; $\pi \leftarrow \fn{Prompt}(P, \mathcal{O}, A)$</span><span class="cmt">온톨로지로 스키마·프롬프트 생성</span></li>
+    <li><span class="code"><b>for</b> $k = 1$ <b>to</b> $2$ <b>do</b></span></li>
+    <li><span class="code" style="--i:1">$x \leftarrow \mathcal{M}(\pi, u;\ \Sigma,\ \tau = 0)$</span><span class="cmt">JSON 스키마 강제 디코딩</span></li>
+    <li><span class="code" style="--i:1"><b>if</b> $x \models \Sigma$ <b>then break</b></span></li>
+    <li><span class="code" style="--i:1">$\pi \leftarrow \pi \,\Vert\, \fn{Feedback}(x)$</span><span class="cmt">형식 오류를 알려 재요청</span></li>
+    <li><span class="code"><b>end for</b></span></li>
+    <li><span class="code"><b>if</b> $x \not\models \Sigma$ <b>then raise</b> 추출 실패</span></li>
+    <li><span class="code">$V_{\mathrm{new}} \leftarrow \varnothing$</span></li>
+    <li><span class="code"><b>for all</b> $p \in P$ <b>such that</b> $x_p \neq \texttt{null}$ <b>do</b></span></li>
+    <li><span class="code" style="--i:1"><b>if</b> $p$ is numeric <b>then</b> $V_{\mathrm{new}}[p] \leftarrow \fn{Normalize}(x_p, p, \mathcal{O})$</span><span class="cmt">알고리즘 2, 단위 오류 시 제외</span></li>
+    <li><span class="code" style="--i:1"><b>else if</b> $p \in \{\mathrm{solvent}, \mathrm{substrate}\}$ <b>then</b> $V_{\mathrm{new}}[p] \leftarrow \fn{Link}(x_p, \mathcal{O})$</span><span class="cmt">SKOS 동의어로 개체 연결</span></li>
+    <li><span class="code" style="--i:1"><b>else</b> $V_{\mathrm{new}}[p] \leftarrow x_p$</span></li>
+    <li><span class="code"><b>end for</b></span></li>
+    <li><span class="code">$E \leftarrow \fn{LinkEntities}(u, \mathcal{O})$</span><span class="cmt">최장 일치, 조사 경계 인식</span></li>
+    <li><span class="code">$V_{\mathrm{new}} \leftarrow \fn{Complete}(V_{\mathrm{new}}, E, \mathcal{O})$</span><span class="cmt">LLM이 놓친 항목 보완</span></li>
+    <li><span class="code">$V \leftarrow V \oplus V_{\mathrm{new}}$</span><span class="cmt">새 값이 이전 값을 덮어씀</span></li>
+    <li><span class="code">$M \leftarrow \{\, p \in P \mid \mathrm{required}(p) \wedge p \notin V \,\}$</span></li>
+    <li><span class="code"><b>if</b> $M \neq \varnothing$ <b>then</b></span></li>
+    <li><span class="code" style="--i:1"><b>return</b> $(\varnothing,\ \varnothing,\ \fn{Ask}(V, M),\ (V, M))$</span><span class="cmt">필수값은 추측하지 않고 되물음</span></li>
+    <li><span class="code"><b>end if</b></span></li>
+    <li><span class="code">$R \leftarrow \fn{Instantiate}(V)$</span><span class="cmt">선택 항목은 기본값으로 채움</span></li>
+    <li><span class="code">$G_R \leftarrow \fn{ToRDF}(R, \mathcal{O})$</span><span class="cmt">장비·용매·기판 개체와 연결</span></li>
+    <li><span class="code">$\mathcal{I} \leftarrow \fn{SHACL}(\mathcal{O} \cup G_R,\ \mathcal{S})$</span><span class="cmt">위반·경고·정보로 분류</span></li>
+    <li><span class="code"><b>return</b> $(R,\ \mathcal{I},\ \fn{Draft}(R, \mathcal{I}),\ (V, \varnothing))$</span></li>
+  </ol>
+</div>
+
+<!-- 알고리즘 2 -->
+<div class="alg" id="alg2">
+  <div class="caption"><b>알고리즘 2</b>&nbsp; 온톨로지 기반 단위 정규화 $\fn{Normalize}$</div>
+  <div class="io"><b>입력:</b><span>추출값 $x_p = (v, s)$ (값 $v$, 단위 표기 $s$), 파라미터 $p$, 온톨로지 $\mathcal{O}$</span></div>
+  <div class="io"><b>출력:</b><span>기준 단위로 바꾼 값 $v_c$</span></div>
+  <ol>
+    <li><span class="code">$c \leftarrow \mathrm{unit}(p)$</span><span class="cmt">qudt:hasUnit</span></li>
+    <li><span class="code"><b>if</b> $s = \varepsilon$ <b>then return</b> $v$</span><span class="cmt">단위 생략 시 기준 단위로 해석</span></li>
+    <li><span class="code">$w \leftarrow \fn{Lookup}(s, \mathcal{O})$</span><span class="cmt">qudt:symbol, skos:altLabel 비교</span></li>
+    <li><span class="code"><b>if</b> $w = \bot \,\vee\, \mathrm{kind}(w) \neq \mathrm{kind}(c)$ <b>then raise</b> 단위 오류</span><span class="cmt">물리량 종류 불일치</span></li>
+    <li><span class="code"><b>return</b> $(v + o_w)\, m_w / m_c - o_c$</span><span class="cmt">$m$: 변환 배수, $o$: 오프셋</span></li>
+  </ol>
+</div>
+
+<!-- 기호 정의 -->
+<table class="notation" id="notation">
+  <caption>표. 알고리즘 기호 정의</caption>
+  <tr><th>기호</th><th>의미</th></tr>
+  <tr><td>$u$</td><td>작업자가 입력한 실험 계획 문장</td></tr>
+  <tr><td>$D = (V, A)$</td><td>대화 상태. $V$는 지금까지 확정된 파라미터 값(기준 단위), $A$는 직전에 되물은 파라미터</td></tr>
+  <tr><td>$\mathcal{O}$</td><td>온톨로지 지식그래프 (TBox: 개념·속성, ABox: 장비·재료·단위)</td></tr>
+  <tr><td>$\mathcal{S}$</td><td>SHACL 검증 규칙 집합 (장비·재료 한계, 논리 조건)</td></tr>
+  <tr><td>$\mathcal{M}$</td><td>로컬 LLM (OpenAI 호환 API로 호출)</td></tr>
+  <tr><td>$P$</td><td>레시피 파라미터 집합. 온톨로지에서 <code>vd:jsonField</code>가 정의된 속성</td></tr>
+  <tr><td>$\Sigma,\ \pi$</td><td>구조화 출력용 JSON 스키마, 추출 프롬프트. 모두 $P$의 이름·동의어·단위로 생성</td></tr>
+  <tr><td>$\tau$</td><td>샘플링 온도</td></tr>
+  <tr><td>$x,\ x_p$</td><td>LLM 추출 결과와 파라미터 $p$의 값. 수치 항목은 (값, 단위 표기) 쌍</td></tr>
+  <tr><td>$E$</td><td>발화에서 찾은 온톨로지 개체 (용매, 기판, ‘최대 진공’ 같은 정성적 설정값, 공정 순서)</td></tr>
+  <tr><td>$\fn{Complete}$</td><td>$E$로 LLM이 놓친 항목을 채움. 용매·기판은 발화에 하나만 있을 때, 정성적 설정값은 장비 구성품 속성값(예: 펌프 최저 도달 압력)으로</td></tr>
+  <tr><td>$V \oplus V_{\mathrm{new}}$</td><td>$V_{\mathrm{new}}$에 있는 항목은 새 값으로 바꾸고, 나머지는 $V$의 값을 유지</td></tr>
+  <tr><td>$M$</td><td>아직 값이 없는 필수 파라미터 (목표 온도, 목표 압력)</td></tr>
+  <tr><td>$R,\ G_R$</td><td>레시피 초안과 그 RDF 그래프 표현</td></tr>
+  <tr><td>$\mathcal{I}$</td><td>SHACL 검증 결과 (위반·경고·정보)</td></tr>
+  <tr><td>$m_w,\ o_w$</td><td>단위 $w$의 QUDT 변환 배수와 오프셋. $\mathrm{kind}(w)$는 물리량 종류</td></tr>
+</table>
+
+<script>
+  const target = location.hash.slice(1);
+  if (target) {
+    document.body.classList.add("only");
+    document.getElementById(target).classList.add("shown");
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [{ left: "$", right: "$", display: false }],
+      macros: { "\\fn": "\\htmlClass{fn}{\\text{#1}}" },
+      trust: true, strict: false, throwOnError: true,
+    });
+    document.body.dataset.ready = "1";
+  });
+</script>
+</body>
+</html>
