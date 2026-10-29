@@ -698,6 +698,13 @@ async function refreshLlmStatus() {
   const badge = $("llmBadge");
   try {
     const s = await api("/api/llm/status");
+    if (s.kind === "rules") {
+      // PROCESS_LLM_URL=rules: 로컬 LLM 없이 규칙(정규식)으로 값을 뽑는 시험용 모드
+      badge.textContent = "규칙 기반 추출기 (로컬 LLM 없음)";
+      badge.className = "badge warn";
+      badge.title = s.note || "PROCESS_LLM_URL=rules";
+      return;
+    }
     badge.textContent = s.ok ? `로컬 LLM: ${s.model}` : "로컬 LLM 연결 안 됨";
     badge.className = `badge ${s.ok ? "ok" : "bad"}`;
     badge.title = s.ok ? s.url : s.error;

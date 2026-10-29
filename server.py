@@ -16,9 +16,10 @@ from .controller import ProcessController, ProcessError
 from .drivers import ArduinoDriver
 from .examples import ExampleStore, recipe_values
 from .knowledge import KnowledgeBase, KnowledgeError, Review
-from .llm import LLMError, LocalLLM
+from .llm import LLMError
 from .planner import DraftState, PlanResult, Planner
 from .recipe import Recipe, active_minutes_upper_bound
+from .rules import make_extractor
 from .simulator import SimulatedChamber
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -80,9 +81,9 @@ def build_components() -> tuple[ProcessController, Planner, KnowledgeBase]:
         driver = SimulatedChamber(speed=config.SIM_SPEED)
     controller = ProcessController(driver, kb.limits(), kb.validate, runs_dir=config.RUNS_DIR)
     examples = ExampleStore(config.EXAMPLES_PATH, kb)
-    planner = Planner(kb, LocalLLM(
-        config.LLM_BASE_URL, config.LLM_MODEL, config.LLM_TIMEOUT_S, reasoning_effort=config.LLM_REASONING_EFFORT
-    ), examples, config.FEWSHOT_K)
+    # PROCESS_LLM_URL=rules 이면 로컬 LLM 대신 규칙 기반 추출기 (LLM을 돌릴 수 없는 PC용, rules.py)
+    extractor = make_extractor(kb, config.LLM_BASE_URL, config.LLM_MODEL, config.LLM_TIMEOUT_S, config.LLM_REASONING_EFFORT)
+    planner = Planner(kb, extractor, examples, config.FEWSHOT_K)
     return controller, planner, kb
 
 
