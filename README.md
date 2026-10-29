@@ -94,17 +94,33 @@ Ollama를 쓸 때는 서버를 띄우기 전에 `PROCESS_LLM_URL=http://localhos
 
 ## 2. 실행
 
+저장소 폴더 안에서 (폴더 이름이 `process-ai`든 `process_ai`든 상관없습니다):
+
 ```bash
-pip install -r process_ai/requirements.txt
-python3 -m uvicorn process_ai.server:app --port 8100
+pip3 install -r requirements.txt
+python3 start.py
 ```
 
 브라우저에서 http://localhost:8100 을 엽니다. 기본은 **시뮬레이터 모드**(20배속)라서 장비 없이 전체 공정을 돌려볼 수 있습니다.
 로컬 LLM 없이도 양식 입력, 검증, 공정 실행은 모두 동작합니다.
 
+**로컬 LLM을 돌릴 수 없는 PC에서 채팅까지 써 보려면** (메모리 부족, LM Studio 미설치, 클라우드 등):
+
+```bash
+PROCESS_LLM_URL=rules python3 start.py
+```
+
+LLM 대신 `rules.py`의 **규칙 기반 추출기**가 문장에서 값을 뽑습니다 (온톨로지의 단위·항목·재료 사전으로 정규식 매칭).
+화면 배지가 노란색 "규칙 기반 추출기 (로컬 LLM 없음)"으로 바뀝니다. 정해 둔 표현만 읽으므로 처음 보는 말투나 긴 문단은
+LLM보다 많이 놓칩니다. 자동으로 켜지지 않고 주소를 `rules`로 적었을 때만 씁니다. 논문에서는 "LLM 없는 비교 기준"으로 쓸 수
+있습니다 (`python3 start.py eval --url rules`).
+
+`python3 -m uvicorn process_ai.server:app --port 8100`처럼 모듈로 실행하려면 폴더 이름이 `process_ai`여야 하고
+그 상위 폴더에서 실행해야 합니다. `start.py`는 이 조건 없이 돌아갑니다. 테스트는 폴더 안에서 `python3 -m pytest`.
+
 | 환경 변수 | 기본값 | 설명 |
 |---|---|---|
-| `PROCESS_LLM_URL` | `http://localhost:1234/v1` | 로컬 LLM 서버 (OpenAI 호환 API) |
+| `PROCESS_LLM_URL` | `http://localhost:1234/v1` | 로컬 LLM 서버 (OpenAI 호환 API). `rules`면 LLM 없이 규칙 기반 추출기 |
 | `PROCESS_LLM_MODEL` | (비움) | 비우면 서버에 올라온 첫 모델을 씀 |
 | `PROCESS_LLM_TIMEOUT` | `120` | 응답 대기 시간(초) |
 | `PROCESS_LLM_REASONING` | `none` | 추론형 모델(Gemma 4 등)의 "생각 과정"을 끔. 값 추출에는 필요 없고 응답만 몇 배 느려짐. 빈 값이면 보내지 않음 |
@@ -119,7 +135,8 @@ VS Code로 이 폴더를 열고 내장 터미널에서 위 명령을 실행하�
 ## 3. 모델 비교 평가
 
 ```bash
-python3 -m process_ai.evaluation.run_eval --model qwen3-4b --model gemma-3-4b-it
+python3 start.py eval --model qwen3-4b --model gemma-3-4b-it
+python3 start.py eval --url rules        # 규칙 기반 추출기 (LLM 없는 비교 기준)
 ```
 
 `evaluation/cases.jsonl`의 계획서 문장 50개를 각 모델에 넣고 정답과 비교합니다.
@@ -148,6 +165,8 @@ LLM을 다시 부르지 않고 같은 출력을 다시 채점해서 구하므로
 | `ontology/` | 온톨로지(개념·장비·재료)와 SHACL 규칙. [입문서](ontology/README.md) |
 | `knowledge.py` | 온톨로지 적재, 용어 연결, 단위 변환, 검증, 지식 안내, 실행 이력 그래프 |
 | `llm.py` | 로컬 LLM 클라이언트 (LM Studio, Ollama, llama.cpp, vLLM 공통) |
+| `rules.py` | 규칙 기반 추출기. LLM을 돌릴 수 없는 PC용 대체 추출기이자 논문의 LLM 없는 비교 기준 (`PROCESS_LLM_URL=rules`) |
+| `start.py` | 실행 스크립트. 폴더 이름과 관계없이 서버·평가를 띄움 |
 | `planner.py` | 채팅 → 레시피 초안 |
 | `controller.py` | 공정 상태 머신, 안전 인터락, 실행 기록 |
 | `endpoint.py` | 포토다이오드 신호로 건조 종료점 판정 |

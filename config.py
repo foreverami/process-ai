@@ -34,6 +34,7 @@ RUNS_DIR = Path(os.getenv("PROCESS_RUNS_DIR", Path(__file__).parent / "runs"))
 EQUIPMENT_ID = os.getenv("PROCESS_EQUIPMENT", "Chamber01")  # vd-equipment.ttl의 장비 개체 이름
 
 # 로컬 LLM 서버 (OpenAI 호환 API). LM Studio 기본 주소. Ollama는 http://localhost:11434/v1
+# "rules"로 적으면 LLM 없이 규칙 기반 추출기(rules.py)를 쓴다 — LLM을 돌릴 수 없는 PC에서 채팅 흐름을 시험할 때
 LLM_BASE_URL = os.getenv("PROCESS_LLM_URL", "http://localhost:1234/v1")
 LLM_MODEL = os.getenv("PROCESS_LLM_MODEL", "")  # 비우면 서버에 올라와 있는 첫 번째 모델
 LLM_TIMEOUT_S = float(os.getenv("PROCESS_LLM_TIMEOUT", "120"))

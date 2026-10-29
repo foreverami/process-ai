@@ -84,14 +84,14 @@ class LocalLLM:
         try:
             models = await self.list_models()
         except LLMError as e:
-            return {"ok": False, "url": self.base_url, "model": self.model or None, "models": [], "error": str(e)}
+            return {"ok": False, "url": self.base_url, "model": self.model or None, "models": [], "error": str(e), "kind": "llm"}
         model = self.model or next((m for m in models if _is_chat_model(m)), None)
         error = None
         if model is None:
             error = "서버에 불러온 모델이 없습니다."
         elif self.model and self.model not in models:
             error = f"서버에 '{self.model}' 모델이 없습니다."
-        return {"ok": error is None, "url": self.base_url, "model": model, "models": models, "error": error}
+        return {"ok": error is None, "url": self.base_url, "model": model, "models": models, "error": error, "kind": "llm"}
 
     async def complete_json(self, messages: list[dict], schema: dict, name: str = "extraction") -> tuple[dict, str]:
         model = await self.resolve_model()

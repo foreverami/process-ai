@@ -5,6 +5,7 @@
 
     python3 -m process_ai.evaluation.run_eval                          # 서버에 올라온 모델
     python3 -m process_ai.evaluation.run_eval --model qwen3-4b --model gemma-3-4b-it
+    python3 start.py eval --url rules                                  # 규칙 기반 추출기 (LLM 없는 비교 기준)
 
 지표
 - 필드 정확도: 정답 항목 중 맞게 뽑은 비율 (단위 변환 후 1% 이내면 정답)
@@ -25,8 +26,9 @@ from pathlib import Path
 
 from ..config import LLM_BASE_URL, LLM_REASONING_EFFORT, LLM_TIMEOUT_S
 from ..knowledge import KnowledgeBase
-from ..llm import LLMError, LocalLLM
+from ..llm import LLMError
 from ..planner import DraftState, Interpretation, Planner
+from ..rules import make_extractor
 
 CASES_PATH = Path(__file__).with_name("cases.jsonl")
 RESULTS_DIR = Path(__file__).with_name("results")
@@ -235,7 +237,7 @@ async def run(models: list[str], url: str, timeout: float, cases_path: Path, tag
     reports = []
     for model in models or [""]:
         partial = RESULTS_DIR / f"partial-{tag or 'run'}-{(model or 'default').replace('/', '_')}.jsonl" if resume else None
-        llm = LocalLLM(url, model, timeout, reasoning_effort=LLM_REASONING_EFFORT)
+        llm = make_extractor(kb, url, model, timeout, LLM_REASONING_EFFORT)  # --url rules 이면 규칙 기반 추출기
         try:
             status = await llm.status()
             if not status["ok"]:
@@ -259,7 +261,7 @@ async def run(models: list[str], url: str, timeout: float, cases_path: Path, tag
 def main() -> None:
     parser = argparse.ArgumentParser(description="로컬 LLM 모델 비교 평가")
     parser.add_argument("--model", action="append", default=[], help="평가할 모델 이름 (여러 번 지정 가능)")
-    parser.add_argument("--url", default=LLM_BASE_URL, help="OpenAI 호환 API 주소")
+    parser.add_argument("--url", default=LLM_BASE_URL, help="OpenAI 호환 API 주소. 'rules'면 LLM 없이 규칙 기반 추출기")
     parser.add_argument("--timeout", type=float, default=LLM_TIMEOUT_S)
     parser.add_argument("--cases", type=Path, default=CASES_PATH)
     parser.add_argument("--tag", default="", help="결과 파일 이름에 붙일 실험 이름 (예: v1-baseline)")
